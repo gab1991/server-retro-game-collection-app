@@ -44,18 +44,8 @@ router.post('/sign_up', async (req, res) => {
   });
   try {
     const savedUser = await user.save();
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'origin, content-type, accept'
-    );
     res.send({ user_id: user._id });
   } catch (err) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'origin, content-type, accept'
-    );
     res.status(400).send(err);
   }
 });
@@ -63,26 +53,37 @@ router.post('/sign_up', async (req, res) => {
 router.post('/sign_in', async (req, res) => {
   //validate
   const { error } = signInValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) {
+    const message = error.details[0].message;
+    const divided = divideStr(message);
+    return res.status(400).send({
+      err_message: divided[1],
+      field: divided[0]
+    });
+  }
 
   // check if this user exists
   const user = await User.findOne({ username: req.body.username });
   if (!user)
-    return res.status(400).send({ err_message: 'Username doesn" exist ' });
+    return res
+      .status(400)
+      .send({ err_message: `Username doesn't exist `, field: 'username' });
 
   //Password is correct
   const validPass = await bcrypt.compare(req.body.password, user.password);
   if (!validPass)
     return res
       .status(400)
-      .send({ err_message: 'Username or password is not correct' });
+      .send({
+        err_message: 'Username or password is not correct',
+        field: 'password'
+      });
 
   // Creating validation token
   const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
 
-  res.header('auth-token', token).send(token);
-  console.log(res);
-  // res.send('Log In');
+  res.header('auth-token', token);
+  res.send({ success: 'Log In', token: token });
 });
 
 module.exports = router;
