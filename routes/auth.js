@@ -72,18 +72,17 @@ router.post('/sign_in', async (req, res) => {
   //Password is correct
   const validPass = await bcrypt.compare(req.body.password, user.password);
   if (!validPass)
-    return res
-      .status(400)
-      .send({
-        err_message: 'Username or password is not correct',
-        field: 'password'
-      });
+    return res.status(400).send({
+      err_message: 'Username or password is not correct',
+      field: 'password'
+    });
 
   // Creating validation token
   const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
 
-  res.header('auth-token', token);
-  res.send({ success: 'Log In', token: token });
+  //res.header('access-control-allow-headers', 'auth-token');
+  console.log(token);
+  res.send({ success: 'Log In', username: req.body.username, token: token });
 });
 
 module.exports = router;

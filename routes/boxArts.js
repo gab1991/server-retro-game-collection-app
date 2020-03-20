@@ -7,13 +7,7 @@ const router = express.Router();
 //getting an box_art
 router.get('/:platform/:gameName', getBoxArt, async (req, res) => {
   try {
-    //Enabling CORS
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'origin, content-type, accept'
-    );
-    res.json(res.filePath).send();
+    res.json(res.filePath);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -22,8 +16,6 @@ router.get('/:platform/:gameName', getBoxArt, async (req, res) => {
 //Middleware
 function getBoxArt(req, res, next) {
   // parametr difens the match of a search in minisearch library. The bigger the number the better the match
-  console.log(req);
-
   const scoreThreshHold = 13;
   const host = req.get('host');
   const genericBox = `http://${host}/images/box_artworks/${req.params.platform}/generic_box.png`;
@@ -39,8 +31,6 @@ function getBoxArt(req, res, next) {
         `../assets/images/box_artworks/${req.params.platform}/${currentRegion}`
       );
       const files = fs.readdirSync(directory);
-      console.log(directory);
-
       if (!files && i === regions.length - 1) {
         return res
           .status(404)
@@ -57,7 +47,6 @@ function getBoxArt(req, res, next) {
           link: file
         });
       });
-      // console.log(filesObj);
 
       miniSearch = new minisearh({
         fields: ['name'],
@@ -67,10 +56,7 @@ function getBoxArt(req, res, next) {
 
       let searchQuery = req.params.gameName.toLowerCase();
       let boxArts = miniSearch.search(searchQuery);
-      console.log(boxArts);
       if (boxArts[0] && boxArts[0].score > scoreThreshHold) {
-        console.log('here');
-        console.log(boxArts);
         let bestMatchedhBox = boxArts[0];
         filePath = `http://${host}/images/box_artworks/${req.params.platform}/${currentRegion}/${bestMatchedhBox.link}`;
         break;

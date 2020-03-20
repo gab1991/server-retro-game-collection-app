@@ -13,8 +13,10 @@ var cors = require('cors');
 
 mongoose.connect(process.env.DATABASE_URL, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useCreateIndex: true
 });
+mongoose.set('useCreateIndex', true);
 const db = mongoose.connection;
 db.on('error', err => console.error(err));
 db.once('open', () => console.log('db connected'));
@@ -38,6 +40,10 @@ app.use('/box_arts', boxArtRouter);
 //authentification
 const authRouter = require('./routes/auth.js');
 app.use('/auth', authRouter);
+
+//profile
+const profileRouter = require('./routes/profile.js');
+app.use('/profile', profileRouter);
 
 // private requests
 const privateReq = require('./routes/privateRequest.js');
