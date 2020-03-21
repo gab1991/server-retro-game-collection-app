@@ -20,9 +20,8 @@ router.post(
   '/:username/update/:token',
   verify.verifyToken,
   async (req, res) => {
-    console.log(req.body);
     const username = req.params.username;
-    const { action, platform, name } = req.body;
+    const { action, platform, game } = req.body;
     try {
       const profile = await Profile.findOne({ username: username });
       if (profile.length === 0) {
@@ -31,10 +30,79 @@ router.post(
 
       switch (action) {
         case 'addGame':
-          const userPlatforms = profile.owned_list.platforms;
-          userPlatforms.forEach();
-          console.log(userPlatforms);
+          {
+            const userPlatforms = profile.owned_list.platforms;
+            let updPlatform;
+
+            for (let i = 0; i < userPlatforms.length; i++) {
+              if (platform === userPlatforms[i].name) {
+                updPlatform = userPlatforms[i];
+                break;
+              }
+            }
+
+            // if this platform is not in the userlist
+            if (!updPlatform) {
+              userPlatforms.push({ name: platform, games: [] });
+              const lastIdx = userPlatforms.length - 1;
+              updPlatform = userPlatforms[lastIdx];
+              console.log(updPlatform);
+            }
+
+            const gamesForPlatform = updPlatform.games;
+            // check for existing games
+            for (let i = 0; i < gamesForPlatform.length; i++) {
+              if (game.name === gamesForPlatform[i].name) {
+                return res.status(400).send({
+                  err_message: `${game.name} is already in your colletion`
+                });
+              }
+            }
+            gamesForPlatform.push({
+              slug: game.slug,
+              name: game.name,
+              date: Date.now()
+            });
+            await profile.save();
+            res.send({ success: `${game.name} has been added successfully` });
+          }
+
           break;
+
+        case 'removeGame': {
+          const userPlatforms = profile.owned_list.platforms;
+          let updPlatform;
+          let updIdx;
+
+          for (let i = 0; i < userPlatforms.length; i++) {
+            if (platform === userPlatforms[i].name) {
+              updPlatform = userPlatforms[i];
+              updIdx = i;
+              break;
+            }
+          }
+
+          // if this platform is not in the userlist
+          if (!updPlatform) {
+            return res.status(400).send({
+              err_message: `Could'nt find this platfrom in user's platforms`
+            });
+          }
+
+          let gamesForPlatform = updPlatform.games;
+          // check for existing games
+          for (let i = 0; i < gamesForPlatform.length; i++) {
+            if (game.name === gamesForPlatform[i].name) {
+              gamesForPlatform.splice(i, 1);
+            }
+          }
+          // Check wheter remove directory or not
+          if (gamesForPlatform.length === 0) userPlatforms.splice(updIdx, 1);
+
+          await profile.save();
+          res.send({ success: `${game.name} has been removed successfully` });
+        }
+
         default:
           break;
       }
@@ -43,14 +111,5 @@ router.post(
     }
   }
 );
-
-const profile = async () => {
-  const p = await Profile.findOne({ username: 'gab1' });
-  const pls = p.owned_list.platforms;
-  pls = { name: 'Genesis', games: '' };
-  p.save();
-};
-
-profile();
 
 module.exports = router;

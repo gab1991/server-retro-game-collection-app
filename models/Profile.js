@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 
 const gameSchema = new mongoose.Schema({
-  slug: { type: String, requred: true },
-  name: { type: String, requred: true }
+  slug: { type: String, requred: true, unique: true, dropDups: true },
+  name: { type: String, requred: true, unique: true, dropDups: true },
+  date: { type: Date, default: Date.now }
 });
 const platfromSchema = new mongoose.Schema({
-  // name: { type: String, requred: true, unique: true, dropDups: true },
+  name: { type: String, requred: true, unique: true, dropDups: true },
   games: [gameSchema]
 });
 
@@ -17,11 +18,11 @@ const profileSchema = new mongoose.Schema({
     dropDups: true
   },
   owned_list: {
-    platforms: { name: [platfromSchema] }
+    platforms: [platfromSchema]
   },
   wish_list: {
     platforms: [platfromSchema]
   }
 });
 
-module.exports = mongoose.model('Profile', profileSchema);
+module.exports = mongoose.model('profile', profileSchema);
