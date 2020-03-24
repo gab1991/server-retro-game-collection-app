@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const gameSchema = new mongoose.Schema({
-  slug: { type: String, requred: true, unique: true, dropDups: true },
-  name: { type: String, requred: true, unique: true, dropDups: true },
+  slug: { type: String, requred: true },
+  name: { type: String, requred: true },
   date: { type: Date, default: Date.now }
 });
 const platfromSchema = new mongoose.Schema({
-  name: { type: String, requred: true, unique: true, dropDups: true },
+  name: { type: String, defaultL: undefined },
   games: [gameSchema]
 });
 

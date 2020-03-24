@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const Profile = require('../models/Profile.js');
 const {
   signUpValidation,
   signInValidation,
@@ -43,9 +44,16 @@ router.post('/sign_up', async (req, res) => {
     password: hashPassword
   });
   try {
-    const savedUser = await user.save();
+    await user.save();
+    const profile = new Profile({
+      username: req.body.username,
+      owned_list: { platforms: [] },
+      wish_list: { platforms: [] }
+    });
+    await profile.save();
     res.send({ user_id: user._id });
   } catch (err) {
+    console.log(err);
     res.status(400).send(err);
   }
 });
