@@ -46,7 +46,6 @@ router.post(
               userPlatforms.push({ name: platform, games: [] });
               const lastIdx = userPlatforms.length - 1;
               updPlatform = userPlatforms[lastIdx];
-              console.log(updPlatform);
             }
 
             const gamesForPlatform = updPlatform.games;
@@ -69,40 +68,74 @@ router.post(
 
           break;
 
-        case 'removeGame': {
-          const userPlatforms = profile.owned_list.platforms;
-          let updPlatform;
-          let updIdx;
+        case 'removeGame':
+          {
+            const userPlatforms = profile.owned_list.platforms;
+            let updPlatform;
+            let updIdx;
 
-          for (let i = 0; i < userPlatforms.length; i++) {
-            if (platform === userPlatforms[i].name) {
-              updPlatform = userPlatforms[i];
-              updIdx = i;
-              break;
+            for (let i = 0; i < userPlatforms.length; i++) {
+              if (platform === userPlatforms[i].name) {
+                updPlatform = userPlatforms[i];
+                updIdx = i;
+                break;
+              }
             }
-          }
 
-          // if this platform is not in the userlist
-          if (!updPlatform) {
-            return res.status(400).send({
-              err_message: `Could'nt find this platfrom in user's platforms`
-            });
-          }
-
-          let gamesForPlatform = updPlatform.games;
-          // check for existing games
-          for (let i = 0; i < gamesForPlatform.length; i++) {
-            if (game.name === gamesForPlatform[i].name) {
-              gamesForPlatform.splice(i, 1);
+            // if this platform is not in the userlist
+            if (!updPlatform) {
+              return res.status(400).send({
+                err_message: `Could'nt find this platfrom in user's platforms`
+              });
             }
+
+            let gamesForPlatform = updPlatform.games;
+            // check for existing games
+            for (let i = 0; i < gamesForPlatform.length; i++) {
+              if (game.name === gamesForPlatform[i].name) {
+                gamesForPlatform.splice(i, 1);
+              }
+            }
+            // Check wheter remove directory or not
+            if (gamesForPlatform.length === 0) userPlatforms.splice(updIdx, 1);
+
+            await profile.save();
+            res.send({ success: `${game.name} has been removed successfully` });
           }
-          // Check wheter remove directory or not
-          if (gamesForPlatform.length === 0) userPlatforms.splice(updIdx, 1);
+          break;
 
-          await profile.save();
-          res.send({ success: `${game.name} has been removed successfully` });
-        }
+        case 'reorder':
+          {
+            const userPlatforms = profile.owned_list.platforms;
+            let updPlatform;
+            let updIdx;
 
+            for (let i = 0; i < userPlatforms.length; i++) {
+              if (platform === userPlatforms[i].name) {
+                updPlatform = userPlatforms[i];
+                updIdx = i;
+                break;
+              }
+            }
+            // if this platform is not in the userlist
+            if (!updPlatform) {
+              return res.status(400).send({
+                err_message: `Could'nt find this platfrom in user's platforms`
+              });
+            }
+
+            // check for equal counts
+            if (updPlatform.games.length !== req.body.sortedGames.length) {
+              return res.status(400).send({
+                err_message: `Wrong number of games! In db ${updPlatform.games.length} in request ${req.body.sortedGames.length}`
+              });
+            }
+
+            updPlatform.games = [...req.body.sortedGames];
+            await profile.save();
+            res.send({ success: `reordering done` });
+          }
+          break;
         default:
           break;
       }
