@@ -21,7 +21,7 @@ router.post(
   verify.verifyToken,
   async (req, res) => {
     const username = req.params.username;
-    const { action, platform, game } = req.body;
+    const { action, platform, game, list } = req.body;
     try {
       const profile = await Profile.findOne({ username: username });
       if (profile.length === 0) {
@@ -31,7 +31,9 @@ router.post(
       switch (action) {
         case 'addGame':
           {
-            const userPlatforms = profile.owned_list.platforms;
+            //check wich list to update
+            const userList = list === 'ownedList' ? 'owned_list' : 'wish_list';
+            const userPlatforms = profile[userList].platforms;
             let updPlatform;
 
             for (let i = 0; i < userPlatforms.length; i++) {
@@ -40,7 +42,6 @@ router.post(
                 break;
               }
             }
-
             // if this platform is not in the userlist
             if (!updPlatform) {
               userPlatforms.push({ name: platform, games: [] });
@@ -70,7 +71,8 @@ router.post(
 
         case 'removeGame':
           {
-            const userPlatforms = profile.owned_list.platforms;
+            const userList = list === 'ownedList' ? 'owned_list' : 'wish_list';
+            const userPlatforms = profile[userList].platforms;
             let updPlatform;
             let updIdx;
 
