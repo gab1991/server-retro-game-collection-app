@@ -32,7 +32,7 @@ router.post(
         case 'addGame':
           {
             //check wich list to update
-            const userList = list === 'ownedList' ? 'owned_list' : 'wish_list';
+            const userList = list === 'owned_list' ? 'owned_list' : 'wish_list';
             const userPlatforms = profile[userList].platforms;
             let updPlatform;
 
@@ -71,7 +71,7 @@ router.post(
 
         case 'removeGame':
           {
-            const userList = list === 'ownedList' ? 'owned_list' : 'wish_list';
+            const userList = list === 'owned_list' ? 'owned_list' : 'wish_list';
             const userPlatforms = profile[userList].platforms;
             let updPlatform;
             let updIdx;

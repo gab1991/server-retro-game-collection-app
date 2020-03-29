@@ -45,9 +45,9 @@ app.use('/auth', authRouter);
 const profileRouter = require('./routes/profile.js');
 app.use('/profile', profileRouter);
 
-// private requests
-const privateReq = require('./routes/privateRequest.js');
-app.use('/private', privateReq);
+//Youtube
+const youtubeRouter = require('./routes/youtube.js');
+app.use('/youtube', youtubeRouter);
 
 //static files
 app.use(express.static('assets'));
