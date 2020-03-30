@@ -21,7 +21,15 @@ function getBoxArt(req, res, next) {
   const genericBox = `http://${host}/images/box_artworks/${req.params.platform}/generic_box.png`;
   let filePath;
 
-  let regions = ['USA', 'Japan'];
+  const regionsDir = path.resolve(
+    __dirname,
+    `../assets/images/box_artworks/${req.params.platform}/`
+  );
+  const platformDir = fs.readdirSync(regionsDir);
+  const regions = platformDir.filter(item => {
+    const itemPath = path.resolve(regionsDir, item);
+    return fs.lstatSync(itemPath).isDirectory();
+  });
 
   try {
     for (let i = 0; i < regions.length; i++) {
