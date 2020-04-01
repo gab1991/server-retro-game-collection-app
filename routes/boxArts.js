@@ -26,10 +26,13 @@ function getBoxArt(req, res, next) {
     `../assets/images/box_artworks/${req.params.platform}/`
   );
   const platformDir = fs.readdirSync(regionsDir);
-  const regions = platformDir.filter(item => {
-    const itemPath = path.resolve(regionsDir, item);
-    return fs.lstatSync(itemPath).isDirectory();
-  });
+  const regions = platformDir
+    .filter(item => {
+      const itemPath = path.resolve(regionsDir, item);
+      return fs.lstatSync(itemPath).isDirectory();
+    })
+    .sort()
+    .reverse();
 
   try {
     for (let i = 0; i < regions.length; i++) {
