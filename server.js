@@ -49,6 +49,10 @@ app.use('/profile', profileRouter);
 const youtubeRouter = require('./routes/youtube.js');
 app.use('/youtube', youtubeRouter);
 
+//Ebay
+const EbayRouter = require('./routes/ebay.js');
+app.use('/ebay', EbayRouter);
+
 //static files
 app.use(express.static('assets'));
 

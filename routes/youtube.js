@@ -20,7 +20,7 @@ router.get(
 function getSoundtrack(req, res, next) {
   const { gameName, platform } = req.params;
   const words = `${gameName.split(' ').join('+')}+${platform}+soundtrack`;
-  console.log(words);
+
   youtube.search.list(
     {
       key: apiKey,

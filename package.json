@@ -16,7 +16,8 @@
     "googleapis": "^48.0.0",
     "jsonwebtoken": "^8.5.1",
     "minisearch": "^2.1.4",
-    "mongoose": "^5.9.4"
+    "mongoose": "^5.9.4",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
