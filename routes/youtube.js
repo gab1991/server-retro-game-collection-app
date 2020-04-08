@@ -5,21 +5,17 @@ const { google } = require('googleapis');
 const youtube = google.youtube('v3');
 const apiKey = process.env.YOUTUBE_API_KEY;
 
-router.get(
-  '/soundtrack/:platform/:gameName',
-  getSoundtrack,
-  async (req, res) => {
-    try {
-      res.json(res.firstVideoId);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
+router.get('/:videoType/:platform/:gameName', getVideo, async (req, res) => {
+  try {
+    res.json(res.firstVideoId);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-);
+});
 
-function getSoundtrack(req, res, next) {
-  const { gameName, platform } = req.params;
-  const words = `${gameName.split(' ').join('+')}+${platform}+soundtrack`;
+function getVideo(req, res, next) {
+  const { videoType, gameName, platform } = req.params;
+  const words = `${gameName.split(' ').join('+')}+${platform}+${videoType}`;
 
   youtube.search.list(
     {
@@ -29,7 +25,7 @@ function getSoundtrack(req, res, next) {
       q: words,
       maxResults: 5,
       order: 'relevance',
-      videoEmbeddable: true
+      videoEmbeddable: true,
     },
     (err, response) => {
       if (err) return res.status(500).json({ message: err.errors });

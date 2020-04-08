@@ -37,9 +37,21 @@ router.get('/shopingCosts/:id', getShippingCost, async (req, res) => {
 
 async function findByKeywords(req, res, next) {
   const { platform, gameName } = req.params;
-
+  console.log(platform);
   let ebayPlatformname;
-  if (platform === 'Genesis') ebayPlatformname = 'Sega Genesis';
+  switch (platform) {
+    case 'Genesis':
+      ebayPlatformname = 'Sega Genesis';
+      break;
+    case 'NES':
+      ebayPlatformname = 'Nintendo NES';
+      break;
+    case 'PlayStation':
+      ebayPlatformname = 'Sony PlayStation 1';
+      break;
+    default:
+      ebayPlatformname = '';
+  }
 
   const queryParams = {
     'OPERATION-NAME': 'findItemsByKeywords',
@@ -50,20 +62,21 @@ async function findByKeywords(req, res, next) {
     'RESPONSE-DATA-FORMAT': 'JSON',
     keywords: gameName,
     'aspectFilter(0).aspectName': 'Platform',
-    'aspectFilter(0).aspectValueName': ebayPlatformname
+    'aspectFilter(0).aspectValueName': ebayPlatformname,
   };
   const query = querystring.encode(queryParams);
   const url = `${ebayFindingServiceUrl}?${query}`;
+  console.log(url);
 
   const response = await fetch(url)
-    .then(res => res.json())
-    .then(data => data)
-    .catch(err => err);
+    .then((res) => res.json())
+    .then((data) => data)
+    .catch((err) => err);
 
   res.items = response.findItemsByKeywordsResponse[0].searchResult;
   next();
 }
-
+let call = 0;
 async function findSingleItem(req, res, next) {
   const { id } = req.params;
 
@@ -74,17 +87,17 @@ async function findSingleItem(req, res, next) {
     siteid: '0',
     version: '967',
     ItemID: id,
-    IncludeSelector: 'Description,ItemSpecifics,ShippingCosts'
+    IncludeSelector: 'Description,ItemSpecifics,ShippingCosts',
   };
 
   const query = querystring.encode(queryParams);
   const url = `${ebayGetItemUrl}?${query}`;
 
-  console.log(url);
+  console.log(call++);
   const response = await fetch(url)
-    .then(res => res.json())
-    .then(data => data)
-    .catch(err => err);
+    .then((res) => res.json())
+    .then((data) => data)
+    .catch((err) => err);
 
   res.item = response;
   next();
@@ -103,16 +116,16 @@ async function getShippingCost(req, res, next) {
     QuantitySold: 1,
     IncludeDetails: true,
     DestinationCountryCode: countryCode || 'RU',
-    DestinationPostalCode: postalCode || ''
+    DestinationPostalCode: postalCode || '',
   };
 
   const query = querystring.encode(queryParams);
   const url = `${ebayGetItemUrl}?${query}`;
 
   const response = await fetch(url)
-    .then(res => res.json())
-    .then(data => data)
-    .catch(err => err);
+    .then((res) => res.json())
+    .then((data) => data)
+    .catch((err) => err);
 
   res.item = response;
   next();
