@@ -14,13 +14,13 @@ var cors = require('cors');
 mongoose.connect(process.env.DATABASE_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true
+  useCreateIndex: true,
 });
 mongoose.set('useCreateIndex', true);
 const db = mongoose.connection;
-db.on('error', err => console.error(err));
+db.on('error', (err) => console.error(err));
 db.once('open', () => console.log('db connected'));
-
+console.log(db.profiles);
 //allows server accepts jason
 app.use(express.json());
 

@@ -37,7 +37,6 @@ router.get('/shopingCosts/:id', getShippingCost, async (req, res) => {
 
 async function findByKeywords(req, res, next) {
   const { platform, gameName } = req.params;
-  console.log(platform);
   let ebayPlatformname;
   switch (platform) {
     case 'Genesis':
@@ -66,7 +65,6 @@ async function findByKeywords(req, res, next) {
   };
   const query = querystring.encode(queryParams);
   const url = `${ebayFindingServiceUrl}?${query}`;
-  console.log(url);
 
   const response = await fetch(url)
     .then((res) => res.json())

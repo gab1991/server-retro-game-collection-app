@@ -1,13 +1,20 @@
 const mongoose = require('mongoose');
 
+const ebayOffersSchema = new mongoose.Schema({
+  id: { type: String },
+  date: { type: Date, default: Date.now },
+});
+
 const gameSchema = new mongoose.Schema({
   slug: { type: String, requred: true },
   name: { type: String, requred: true },
-  date: { type: Date, default: Date.now }
+  date: { type: Date, default: Date.now },
+  watchedEbayOffers: [ebayOffersSchema],
 });
+
 const platfromSchema = new mongoose.Schema({
   name: { type: String, defaultL: undefined },
-  games: [gameSchema]
+  games: [gameSchema],
 });
 
 const profileSchema = new mongoose.Schema({
@@ -15,14 +22,14 @@ const profileSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    dropDups: true
+    dropDups: true,
   },
   owned_list: {
-    platforms: [platfromSchema]
+    platforms: [platfromSchema],
   },
   wish_list: {
-    platforms: [platfromSchema]
-  }
+    platforms: [platfromSchema],
+  },
 });
 
 module.exports = mongoose.model('profile', profileSchema);
