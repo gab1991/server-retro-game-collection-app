@@ -182,10 +182,22 @@ router.post(
   }
 );
 
+router.get(
+  '/getGameWatchedCards/:username/:token/:platform/:gameName',
+  verify.verifyToken,
+  getGameWatchedCards,
+  async (req, res) => {
+    try {
+      res.json({ success: res.success });
+    } catch (err) {
+      return res.status(500).json({ message: err.message });
+    }
+  }
+);
+
 async function addEbayCard(req, res, next) {
   const username = req.params.username;
   const { ebayItemId, gameName, platform } = req.body;
-  console.log({ ebayItemId, gameName, platform });
   try {
     const profile = await Profile.findOne({ username: username });
     if (profile.length === 0) {
@@ -297,7 +309,6 @@ async function isWatchedEbayCard(req, res, next) {
 async function removeEbayCard(req, res, next) {
   const username = req.params.username;
   const { ebayItemId, gameName, platform } = req.body;
-  console.log({ ebayItemId, gameName, platform });
   try {
     const profile = await Profile.findOne({ username: username });
     if (profile.length === 0) {
@@ -344,6 +355,55 @@ async function removeEbayCard(req, res, next) {
     }
     await profile.save();
     res.success = `${ebayItemId} has been removed `;
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+  next();
+}
+
+async function getGameWatchedCards(req, res, next) {
+  const { username, gameName, platform } = req.params;
+
+  try {
+    const profile = await Profile.findOne({ username: username });
+    if (profile.length === 0) {
+      return res.status(400).send({ err_message: 'no such user' });
+    }
+    // check which list to update
+    const userList = 'wish_list';
+    const userPlatforms = profile[userList].platforms;
+
+    let updPlatform;
+    for (let i = 0; i < userPlatforms.length; i++) {
+      if (platform === userPlatforms[i].name) {
+        updPlatform = userPlatforms[i];
+        break;
+      }
+    }
+    // if this platform is not in the userlist
+    if (!updPlatform)
+      return res.status(400).send({
+        err_message: `no game with the name ${gameName} has been found in your wishlist`,
+      });
+
+    const gamesForPlatform = updPlatform.games;
+
+    let gameToChange;
+    // check for existing games
+    for (let i = 0; i < gamesForPlatform.length; i++) {
+      if (gameName === gamesForPlatform[i].name) {
+        gameToChange = gamesForPlatform[i];
+      }
+    }
+
+    if (!gameToChange)
+      return res.status(400).send({
+        err_message: `no game with the name ${gameName} has been found in your wishlist`,
+      });
+
+    // check for existind ebayId
+    const ebayOffers = gameToChange.watchedEbayOffers;
+    res.success = ebayOffers;
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

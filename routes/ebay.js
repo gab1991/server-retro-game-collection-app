@@ -8,7 +8,7 @@ const ebayFindingServiceUrl = process.env.EBAY_FINDING_SERVICE_URL;
 const ebayGetItemUrl = process.env.EBAY_GET_ITEM_URL;
 
 router.get(
-  '/searchList/:platform/:gameName',
+  '/searchList/:platform/:gameName/:sortOrder',
   findByKeywords,
   async (req, res) => {
     try {
@@ -36,7 +36,7 @@ router.get('/shopingCosts/:id', getShippingCost, async (req, res) => {
 });
 
 async function findByKeywords(req, res, next) {
-  const { platform, gameName } = req.params;
+  const { platform, gameName, sortOrder = 'BestMatch' } = req.params;
   let ebayPlatformname;
   switch (platform) {
     case 'Genesis':
@@ -51,7 +51,7 @@ async function findByKeywords(req, res, next) {
     default:
       ebayPlatformname = '';
   }
-
+  console.log({ platform, gameName, sortOrder });
   const queryParams = {
     'OPERATION-NAME': 'findItemsByKeywords',
     'SERVICE-NAME': 'FindingService',
@@ -59,6 +59,7 @@ async function findByKeywords(req, res, next) {
     'GLOBAL-ID': 'EBAY-US',
     'SECURITY-APPNAME': apiKey,
     'RESPONSE-DATA-FORMAT': 'JSON',
+    sortOrder: sortOrder,
     keywords: gameName,
     'aspectFilter(0).aspectName': 'Platform',
     'aspectFilter(0).aspectValueName': ebayPlatformname,
