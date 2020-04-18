@@ -24,6 +24,21 @@ const profileSchema = new mongoose.Schema({
     unique: true,
     dropDups: true,
   },
+  password: {
+    type: String,
+    required: true,
+    max: 1024,
+    min: 4,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  createdDate: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
   owned_list: {
     platforms: [platfromSchema],
   },

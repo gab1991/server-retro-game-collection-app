@@ -1,15 +1,17 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
-  const token = req.params.token;
-  if (!token) return res.status(401).json('Access Denieid');
+  const authHeader = req.headers.authorization;
+  const token = authHeader.split(' ')[1];
+  if (!token)
+    return res.status(401).json({ access_denied: 'No token provided' });
 
   try {
     const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-    req.username = verified;
+    req.verifiedUserData = verified;
     next();
   } catch (err) {
-    res.status(400).json('Access Denied');
+    res.status(400).json({ access_denied: 'Access Denied' });
   }
 };
 

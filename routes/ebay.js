@@ -51,7 +51,7 @@ async function findByKeywords(req, res, next) {
     default:
       ebayPlatformname = '';
   }
-  console.log({ platform, gameName, sortOrder });
+
   const queryParams = {
     'OPERATION-NAME': 'findItemsByKeywords',
     'SERVICE-NAME': 'FindingService',

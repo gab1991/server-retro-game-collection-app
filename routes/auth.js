@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
 const Profile = require('../models/Profile.js');
 const {
   signUpValidation,
   signInValidation,
-  divideStr
+  divideStr,
 } = require('../validation.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -19,12 +18,12 @@ router.post('/sign_up', async (req, res) => {
     const divided = divideStr(message);
     return res.status(400).send({
       err_message: divided[1],
-      field: divided[0]
+      field: divided[0],
     });
   }
   // check if this user already exists
-  const userEsxists = await User.findOne({ username: req.body.username });
-  const emailEsxists = await User.findOne({ email: req.body.email });
+  const userEsxists = await Profile.findOne({ username: req.body.username });
+  const emailEsxists = await Profile.findOne({ email: req.body.email });
   if (userEsxists)
     return res
       .status(400)
@@ -38,22 +37,17 @@ router.post('/sign_up', async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(req.body.password, salt);
 
-  const user = new User({
+  const profile = new Profile({
     username: req.body.username,
     email: req.body.email,
-    password: hashPassword
+    password: hashPassword,
+    owned_list: { platforms: [] },
+    wish_list: { platforms: [] },
   });
   try {
-    await user.save();
-    const profile = new Profile({
-      username: req.body.username,
-      owned_list: { platforms: [] },
-      wish_list: { platforms: [] }
-    });
     await profile.save();
-    res.send({ user_id: user._id });
+    res.send({ user_id: profile._id });
   } catch (err) {
-    console.log(err);
     res.status(400).send(err);
   }
 });
@@ -66,12 +60,11 @@ router.post('/sign_in', async (req, res) => {
     const divided = divideStr(message);
     return res.status(400).send({
       err_message: divided[1],
-      field: divided[0]
+      field: divided[0],
     });
   }
-
   // check if this user exists
-  const user = await User.findOne({ username: req.body.username });
+  const user = await Profile.findOne({ username: req.body.username });
   if (!user)
     return res
       .status(400)
@@ -82,14 +75,11 @@ router.post('/sign_in', async (req, res) => {
   if (!validPass)
     return res.status(400).send({
       err_message: 'Username or password is not correct',
-      field: 'password'
+      field: 'password',
     });
-
   // Creating validation token
   const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-
   //res.header('access-control-allow-headers', 'auth-token');
-  console.log(token);
   res.send({ success: 'Log In', username: req.body.username, token: token });
 });
 
