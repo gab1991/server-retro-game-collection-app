@@ -17,8 +17,8 @@ function getVideo(req, res, next) {
   const { videoType, gameName, platform } = req.params;
   const words = `${gameName.split(' ').join('+')}+${platform}+${videoType}`;
 
-  youtube.search.list(
-    {
+  youtube.search
+    .list({
       key: apiKey,
       part: 'snippet',
       type: 'video',
@@ -26,13 +26,23 @@ function getVideo(req, res, next) {
       maxResults: 5,
       order: 'relevance',
       videoEmbeddable: true,
-    },
-    (err, response) => {
-      if (err) return res.status(500).json({ message: err.errors });
+    })
+    .then((res) => {
+      console.log(res);
       res.firstVideoId = response.data.items[0].id.videoId;
       next();
-    }
-  );
+    })
+    .catch((err) => {
+      console.log(err.errors[0].message);
+      return res.status(500).json({ message: err.errors[0].message });
+    });
 }
+
+// ,
+//     (err, response) => {
+//       if (err) return res.status(500).json({ message: err.errors });
+//       res.firstVideoId = response.data.items[0].id.videoId;
+//       next();
+//     }
 
 module.exports = router;
