@@ -1,4 +1,5 @@
 const express = require('express');
+const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');
 const minisearh = require('minisearch');
@@ -13,8 +14,8 @@ router.get('/:platform/:gameName', getBoxArt, async (req, res) => {
   }
 });
 
-//Middleware
-function getBoxArt(req, res, next) {
+async function getBoxArt(req, res, next) {
+  const readdir = promisify(fs.readdir);
   // parametr difens the match of a search in minisearch library. The bigger the number the better the match
   const scoreThreshHold = 13;
   const host = req.get('host');
@@ -25,9 +26,9 @@ function getBoxArt(req, res, next) {
     __dirname,
     `../assets/images/box_artworks/${req.params.platform}/`
   );
-  const platformDir = fs.readdirSync(regionsDir);
+  const platformDir = await readdir(regionsDir);
   const regions = platformDir
-    .filter(item => {
+    .filter((item) => {
       const itemPath = path.resolve(regionsDir, item);
       return fs.lstatSync(itemPath).isDirectory();
     })
@@ -41,7 +42,7 @@ function getBoxArt(req, res, next) {
         __dirname,
         `../assets/images/box_artworks/${req.params.platform}/${currentRegion}`
       );
-      const files = fs.readdirSync(directory);
+      const files = await readdir(directory);
       if (!files && i === regions.length - 1) {
         return res
           .status(404)
@@ -55,13 +56,13 @@ function getBoxArt(req, res, next) {
         filesObj.push({
           id: index,
           name: file.toLowerCase().match(regexTrim)[0],
-          link: file
+          link: file,
         });
       });
 
       miniSearch = new minisearh({
         fields: ['name'],
-        storeFields: ['name', 'link']
+        storeFields: ['name', 'link'],
       });
       miniSearch.addAll(filesObj);
 

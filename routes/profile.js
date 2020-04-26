@@ -138,6 +138,40 @@ router.post('/update', verify.verifyToken, async (req, res) => {
         }
         break;
 
+      case 'reorder':
+        {
+          const updList = list;
+          const userPlatforms = profile[updList].platforms;
+          let updPlatform;
+          let updIdx;
+
+          for (let i = 0; i < userPlatforms.length; i++) {
+            if (platform === userPlatforms[i].name) {
+              updPlatform = userPlatforms[i];
+              updIdx = i;
+              break;
+            }
+          }
+          // if this platform is not in the userlist
+          if (!updPlatform) {
+            return res.status(400).send({
+              err_message: `Couldn't find this platfrom in user's platforms`,
+            });
+          }
+
+          // check for equal counts
+          if (updPlatform.games.length !== req.body.sortedGames.length) {
+            return res.status(400).send({
+              err_message: `Wrong number of games! In db ${updPlatform.games.length} in request ${req.body.sortedGames.length}`,
+            });
+          }
+
+          updPlatform.games = [...req.body.sortedGames];
+          await profile.save();
+          res.send({ success: `reordering done` });
+        }
+        break;
+
       default:
         break;
     }
@@ -183,6 +217,19 @@ router.get(
       res.json({ success: res.success });
     } catch (err) {
       return res.status(500).json({ message: err.message });
+    }
+  }
+);
+
+router.post(
+  '/toggleEbaySection',
+  verify.verifyToken,
+  toggleEbaySection,
+  async (req, res) => {
+    try {
+      res.json({ success: res.success });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
     }
   }
 );
@@ -405,6 +452,56 @@ async function getGameWatchedCards(req, res, next) {
     return res.status(500).json({ message: err.message });
   }
   next();
+}
+
+async function toggleEbaySection(req, res, next) {
+  const verifiedId = req.verifiedUserData._id;
+  const { gameName, platform, isShowed } = req.body;
+  try {
+    const profile = await Profile.findOne({ _id: verifiedId });
+
+    if (profile.length === 0) {
+      return res.status(400).send({ err_message: 'no such user' });
+    }
+    // check which list to update
+    const userList = 'wish_list';
+    const userPlatforms = profile[userList].platforms;
+
+    let searchPlatform;
+    for (let i = 0; i < userPlatforms.length; i++) {
+      if (platform === userPlatforms[i].name) {
+        searchPlatform = userPlatforms[i];
+        break;
+      }
+    }
+    // if this platform is not in the userlist
+    if (!searchPlatform) {
+      return res.status(200).json({ missed: 'not in the list' });
+    }
+    const gamesForPlatform = searchPlatform.games;
+
+    let gameToSearch;
+    // check for existing games
+    for (let i = 0; i < gamesForPlatform.length; i++) {
+      if (gameName === gamesForPlatform[i].name) {
+        gameToSearch = gamesForPlatform[i];
+      }
+    }
+    if (!gameToSearch) {
+      return res.status(200).json({ missed: 'not in the list' });
+    }
+
+    // changing the rule
+    gameToSearch.isShowEbay = isShowed;
+    console.log(isShowed);
+    await profile.save();
+    res.success = `Ebay section has been ${
+      isShowed === true ? 'showed' : 'hidden'
+    }`;
+    next();
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
 }
 
 module.exports = router;

@@ -9,6 +9,7 @@ const gameSchema = new mongoose.Schema({
   slug: { type: String, requred: true },
   name: { type: String, requred: true },
   date: { type: Date, default: Date.now },
+  isShowEbay: { type: Boolean, default: true },
   watchedEbayOffers: [ebayOffersSchema],
 });
 

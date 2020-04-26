@@ -27,14 +27,14 @@ function getVideo(req, res, next) {
       order: 'relevance',
       videoEmbeddable: true,
     })
-    .then((res) => {
-      console.log(res);
+    .then((response) => {
+      // console.log(response.data.items);
       res.firstVideoId = response.data.items[0].id.videoId;
       next();
     })
     .catch((err) => {
-      console.log(err.errors[0].message);
-      return res.status(500).json({ message: err.errors[0].message });
+      console.log(err.errors);
+      return res.status(500).json({ message: err.errors });
     });
 }
 
