@@ -3,6 +3,136 @@ const router = express.Router();
 const verify = require('./verifyToken.js');
 const Profile = require('../models/Profile.js');
 
+function getUpdPlatform(platformName, platformList) {
+  let updPlatform;
+  let updInd;
+  for (let i = 0; i < platformList.length; i++) {
+    if (platformName === platformList[i].name) {
+      updPlatform = platformList[i];
+      updInd = i;
+      break;
+    }
+  }
+  return { updPlatform, updInd };
+}
+
+function addNewPlatfrom(platformObj, platformsList) {
+  platformsList.push(platformObj);
+  const lastIdx = platformsList.length - 1;
+  return platformsList[lastIdx];
+}
+
+function isGameInList(gameName, gameList) {
+  for (let i = 0; i < gameList.length; i++) {
+    if (gameName === gameList[i].name) {
+      return { result: true, index: i };
+    }
+  }
+  return { result: false, index: null };
+}
+
+function getGameForUpd(gameName, gameList) {
+  const { index } = isGameInList(gameName, gameList);
+  if (index == null) return null;
+  return gameList[index];
+}
+
+async function addGame(profile, req, res) {
+  try {
+    const { platform, game, list } = req.body;
+
+    //check wich list to update
+    const userList = list === 'owned_list' ? 'owned_list' : 'wish_list';
+    const userPlatforms = profile[userList].platforms;
+    let { updPlatform } = getUpdPlatform(platform, userPlatforms);
+
+    // if this platform is not in the userlist
+    if (!updPlatform)
+      updPlatform = addNewPlatfrom({ name: platform, games: [] });
+    // {
+    //   userPlatforms.push({ name: platform, games: [] });
+    //   const lastIdx = userPlatforms.length - 1;
+    //   updPlatform = userPlatforms[lastIdx];
+    // }
+
+    const gamesForPlatform = updPlatform.games;
+    // check for existing games
+    let isInList = isGameInList(game.name, gamesForPlatform).result;
+    if (isInList)
+      return res.status(400).send({
+        err_message: `${game.name} is already in your colletion`,
+      });
+    gamesForPlatform.push({
+      slug: game.slug,
+      name: game.name,
+      date: Date.now(),
+    });
+    await profile.save();
+    res.send({ success: `${game.name} has been added successfully` });
+  } catch (err) {
+    return res.status(500).send({ message: err });
+  }
+}
+
+async function removeGame(profile, req, res) {
+  try {
+    const { platform, game, list } = req.body;
+    const userList = list === 'owned_list' ? 'owned_list' : 'wish_list';
+    const userPlatforms = profile[userList].platforms;
+    const { updPlatform, updInd } = getUpdPlatform(platform, userPlatforms);
+
+    // if this platform is not in the userlist
+    if (!updPlatform) {
+      return res.status(400).send({
+        err_message: `Could'nt find this platfrom in user's platforms`,
+      });
+    }
+
+    let gamesForPlatform = updPlatform.games;
+
+    // check for existing games
+    const gameInd = isGameInList(game.name, gamesForPlatform).index;
+    if (gameInd !== null) gamesForPlatform.splice(gameInd, 1);
+
+    // Check wheter remove directory or not
+    if (gamesForPlatform.length === 0) userPlatforms.splice(updInd, 1);
+
+    await profile.save();
+    res.send({ success: `${game.name} has been removed successfully` });
+  } catch (err) {
+    return res.status(500).send({ message: err });
+  }
+}
+
+async function reorderGames(profile, req, res) {
+  try {
+    const { platform, sortedGames, list } = req.body;
+    const updList = list;
+    const userPlatforms = profile[updList].platforms;
+    const { updPlatform } = getUpdPlatform(platform, userPlatforms);
+
+    // if this platform is not in the userlist
+    if (!updPlatform) {
+      return res.status(400).send({
+        err_message: `Couldn't find this platfrom in user's platforms`,
+      });
+    }
+
+    // check for equal counts
+    if (updPlatform.games.length !== sortedGames.length) {
+      return res.status(400).send({
+        err_message: `Wrong number of games! In db ${updPlatform.games.length} in request ${sortedGames.length}`,
+      });
+    }
+
+    updPlatform.games = [...sortedGames];
+    await profile.save();
+    res.send({ success: `reordering done` });
+  } catch (err) {
+    return res.status(500).send({ message: err });
+  }
+}
+
 router.get('/', verify.verifyToken, async (req, res) => {
   const verifiedId = req.verifiedUserData._id;
   try {
@@ -18,8 +148,7 @@ router.get('/', verify.verifyToken, async (req, res) => {
 
 router.post('/update', verify.verifyToken, async (req, res) => {
   const verifiedId = req.verifiedUserData._id;
-  const { action, platform, game, list } = req.body;
-
+  const { action } = req.body;
   try {
     const profile = await Profile.findOne({ _id: verifiedId });
     if (profile.length === 0) {
@@ -28,150 +157,14 @@ router.post('/update', verify.verifyToken, async (req, res) => {
 
     switch (action) {
       case 'addGame':
-        {
-          //check wich list to update
-          const userList = list === 'owned_list' ? 'owned_list' : 'wish_list';
-          const userPlatforms = profile[userList].platforms;
-          let updPlatform;
-
-          for (let i = 0; i < userPlatforms.length; i++) {
-            if (platform === userPlatforms[i].name) {
-              updPlatform = userPlatforms[i];
-              break;
-            }
-          }
-          // if this platform is not in the userlist
-          if (!updPlatform) {
-            userPlatforms.push({ name: platform, games: [] });
-            const lastIdx = userPlatforms.length - 1;
-            updPlatform = userPlatforms[lastIdx];
-          }
-
-          const gamesForPlatform = updPlatform.games;
-          // check for existing games
-          for (let i = 0; i < gamesForPlatform.length; i++) {
-            if (game.name === gamesForPlatform[i].name) {
-              return res.status(400).send({
-                err_message: `${game.name} is already in your colletion`,
-              });
-            }
-          }
-          gamesForPlatform.push({
-            slug: game.slug,
-            name: game.name,
-            date: Date.now(),
-          });
-          await profile.save();
-          res.send({ success: `${game.name} has been added successfully` });
-        }
-
+        addGame(profile, req, res);
         break;
-
       case 'removeGame':
-        {
-          const userList = list === 'owned_list' ? 'owned_list' : 'wish_list';
-          const userPlatforms = profile[userList].platforms;
-          let updPlatform;
-          let updIdx;
-
-          for (let i = 0; i < userPlatforms.length; i++) {
-            if (platform === userPlatforms[i].name) {
-              updPlatform = userPlatforms[i];
-              updIdx = i;
-              break;
-            }
-          }
-
-          // if this platform is not in the userlist
-          if (!updPlatform) {
-            return res.status(400).send({
-              err_message: `Could'nt find this platfrom in user's platforms`,
-            });
-          }
-
-          let gamesForPlatform = updPlatform.games;
-          // check for existing games
-          for (let i = 0; i < gamesForPlatform.length; i++) {
-            if (game.name === gamesForPlatform[i].name) {
-              gamesForPlatform.splice(i, 1);
-            }
-          }
-          // Check wheter remove directory or not
-          if (gamesForPlatform.length === 0) userPlatforms.splice(updIdx, 1);
-
-          await profile.save();
-          res.send({ success: `${game.name} has been removed successfully` });
-        }
+        removeGame(profile, req, res);
         break;
-
       case 'reorder':
-        {
-          const updList = list;
-          const userPlatforms = profile[updList].platforms;
-          let updPlatform;
-          let updIdx;
-
-          for (let i = 0; i < userPlatforms.length; i++) {
-            if (platform === userPlatforms[i].name) {
-              updPlatform = userPlatforms[i];
-              updIdx = i;
-              break;
-            }
-          }
-          // if this platform is not in the userlist
-          if (!updPlatform) {
-            return res.status(400).send({
-              err_message: `Couldn't find this platfrom in user's platforms`,
-            });
-          }
-
-          // check for equal counts
-          if (updPlatform.games.length !== req.body.sortedGames.length) {
-            return res.status(400).send({
-              err_message: `Wrong number of games! In db ${updPlatform.games.length} in request ${req.body.sortedGames.length}`,
-            });
-          }
-
-          updPlatform.games = [...req.body.sortedGames];
-          await profile.save();
-          res.send({ success: `reordering done` });
-        }
+        reorderGames(profile, req, res);
         break;
-
-      case 'reorder':
-        {
-          const updList = list;
-          const userPlatforms = profile[updList].platforms;
-          let updPlatform;
-          let updIdx;
-
-          for (let i = 0; i < userPlatforms.length; i++) {
-            if (platform === userPlatforms[i].name) {
-              updPlatform = userPlatforms[i];
-              updIdx = i;
-              break;
-            }
-          }
-          // if this platform is not in the userlist
-          if (!updPlatform) {
-            return res.status(400).send({
-              err_message: `Couldn't find this platfrom in user's platforms`,
-            });
-          }
-
-          // check for equal counts
-          if (updPlatform.games.length !== req.body.sortedGames.length) {
-            return res.status(400).send({
-              err_message: `Wrong number of games! In db ${updPlatform.games.length} in request ${req.body.sortedGames.length}`,
-            });
-          }
-
-          updPlatform.games = [...req.body.sortedGames];
-          await profile.save();
-          res.send({ success: `reordering done` });
-        }
-        break;
-
       default:
         break;
     }
@@ -246,30 +239,16 @@ async function addEbayCard(req, res, next) {
     // check which list to update
     const userList = 'wish_list';
     const userPlatforms = profile[userList].platforms;
+    let { updPlatform } = getUpdPlatform(platform, userPlatforms);
 
-    let updPlatform;
-    for (let i = 0; i < userPlatforms.length; i++) {
-      if (platform === userPlatforms[i].name) {
-        updPlatform = userPlatforms[i];
-        break;
-      }
-    }
     // if this platform is not in the userlist
-    if (!updPlatform) {
-      userPlatforms.push({ name: platform, games: [] });
-      const lastIdx = userPlatforms.length - 1;
-      updPlatform = userPlatforms[lastIdx];
-    }
+    if (!updPlatform)
+      updPlatform = addNewPlatfrom({ name: platform, games: [] });
 
     const gamesForPlatform = updPlatform.games;
 
-    let gameToChange;
+    const gameToChange = getGameForUpd(gameName, gamesForPlatform);
     // check for existing games
-    for (let i = 0; i < gamesForPlatform.length; i++) {
-      if (gameName === gamesForPlatform[i].name) {
-        gameToChange = gamesForPlatform[i];
-      }
-    }
 
     if (!gameToChange)
       return res.status(400).send({
