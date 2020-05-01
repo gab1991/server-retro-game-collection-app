@@ -6,7 +6,7 @@ const minisearh = require('minisearch');
 const router = express.Router();
 
 //getting an box_art
-router.get('/:platform/:gameName', getBoxArt, async (req, res) => {
+router.get('/:platform/:gameName', getBoxArt, (req, res) => {
   try {
     res.json(res.filePath);
   } catch (err) {
