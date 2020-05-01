@@ -2,7 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-var cors = require('cors');
+const cors = require('cors');
+const path = require('path');
 
 mongoose.connect(process.env.DATABASE_URL, {
   useNewUrlParser: true,
@@ -43,8 +44,14 @@ const EbayRouter = require('./routes/ebay.js');
 app.use('/api/ebay', EbayRouter);
 
 //static files
-app.use(express.static('assets'));
 app.use(express.static('build'));
+
+app.use(express.static('assets'));
+
+// Basic html sending
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+});
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log('serv start'));
