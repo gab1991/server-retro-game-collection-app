@@ -17,6 +17,7 @@ router.get('/:platform/:gameName', getBoxArt, async (req, res) => {
 async function getBoxArt(req, res, next) {
   const readdir = promisify(fs.readdir);
   // parametr difens the match of a search in minisearch library. The bigger the number the better the match
+  console.log(req.params);
   const scoreThreshHold = 13;
   const host = req.get('host');
   const genericBox = `http://${host}/images/box_artworks/${req.params.platform}/generic_box.png`;
