@@ -111,6 +111,7 @@ function getPlatform(platformName, platformList) {
 }
 
 function addNewPlatfrom(platformObj, platformsList) {
+  console.log({ platformObj, platformsList });
   platformsList.push(platformObj);
   const lastIdx = platformsList.length - 1;
   return platformsList[lastIdx];
@@ -141,8 +142,11 @@ async function addGame(profile, req, res) {
     let { foundPlatfrom } = getPlatform(platform, userPlatforms);
 
     // if this platform is not in the userlist
-    if (!foundPlatfrom)
-      foundPlatfrom = addNewPlatfrom({ name: platform, games: [] });
+    if (!foundPlatfrom) console.log('here');
+    foundPlatfrom = addNewPlatfrom(
+      { name: platform, games: [] },
+      userPlatforms
+    );
     // {
     //   userPlatforms.push({ name: platform, games: [] });
     //   const lastIdx = userPlatforms.length - 1;
