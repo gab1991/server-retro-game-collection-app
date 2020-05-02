@@ -5,15 +5,23 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 
-mongoose.connect(process.env.DATABASE_URL, {
+let db_url;
+if (process.env.NODE_ENV === 'production') {
+  db_url = process.env.DATABASE_CLOUD_URL;
+} else {
+  db_url = process.env.DATABASE_URL;
+}
+mongoose.connect(db_url, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
 });
-mongoose.set('useCreateIndex', true);
+
 const db = mongoose.connection;
 db.on('error', (err) => console.error(err));
-db.once('open', () => console.log('db connected'));
+db.once('open', () =>
+  console.log(`db connected || ${process.env.NODE_ENV.toUpperCase()}`)
+);
 
 //allows server accepts jason
 app.use(express.json());
@@ -54,4 +62,4 @@ app.get('*', (req, res) => {
 });
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log('serv start'));
+app.listen(PORT, () => console.log(`serv started on port ${PORT}`));
