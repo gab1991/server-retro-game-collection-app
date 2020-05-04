@@ -107,11 +107,11 @@ function getPlatform(platformName, platformList) {
       break;
     }
   }
+
   return { foundPlatfrom, updInd };
 }
 
 function addNewPlatfrom(platformObj, platformsList) {
-  console.log({ platformObj, platformsList });
   platformsList.push(platformObj);
   const lastIdx = platformsList.length - 1;
   return platformsList[lastIdx];
@@ -140,13 +140,14 @@ async function addGame(profile, req, res) {
     const userList = list === 'owned_list' ? 'owned_list' : 'wish_list';
     const userPlatforms = profile[userList].platforms;
     let { foundPlatfrom } = getPlatform(platform, userPlatforms);
-
     // if this platform is not in the userlist
-    if (!foundPlatfrom) console.log('here');
-    foundPlatfrom = addNewPlatfrom(
-      { name: platform, games: [] },
-      userPlatforms
-    );
+    if (!foundPlatfrom) {
+      foundPlatfrom = addNewPlatfrom(
+        { name: platform, games: [] },
+        userPlatforms
+      );
+    }
+
     // {
     //   userPlatforms.push({ name: platform, games: [] });
     //   const lastIdx = userPlatforms.length - 1;
@@ -187,9 +188,9 @@ async function removeGame(profile, req, res) {
     }
 
     let gamesForPlatform = foundPlatfrom.games;
-
     // check for existing games
     const gameInd = isGameInList(game.name, gamesForPlatform).index;
+
     if (gameInd !== null) gamesForPlatform.splice(gameInd, 1);
 
     // Check wheter remove directory or not
@@ -255,8 +256,9 @@ async function addEbayCard(req, res, next) {
     let { foundPlatfrom } = getPlatform(platform, userPlatforms);
 
     // if this platform is not in the userlist
-    if (!foundPlatfrom)
+    if (!foundPlatfrom) {
       foundPlatfrom = addNewPlatfrom({ name: platform, games: [] });
+    }
 
     const gamesForPlatform = foundPlatfrom.games;
 
@@ -445,7 +447,6 @@ async function toggleEbaySection(req, res, next) {
     }
     // changing the rule
     gameToSearch.isShowEbay = isShowed;
-    console.log(isShowed);
     await profile.save();
     res.success = `Ebay section has been ${
       isShowed === true ? 'showed' : 'hidden'

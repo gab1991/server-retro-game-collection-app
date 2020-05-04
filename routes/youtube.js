@@ -28,7 +28,6 @@ function getVideo(req, res, next) {
       videoEmbeddable: true,
     })
     .then((response) => {
-      // console.log(response.data.items);
       res.firstVideoId = response.data.items[0].id.videoId;
       next();
     })
