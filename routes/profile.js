@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const verify = require('./verifyToken.js');
+const verify = require('../tokenVerification/verifyToken.js');
 const Profile = require('../models/Profile.js');
 
 router.get('/', verify.verifyToken, async (req, res) => {
@@ -77,7 +77,7 @@ router.get(
   getGameWatchedCards,
   async (req, res) => {
     try {
-      res.json({ success: res.success });
+      res.json(res.success);
     } catch (err) {
       return res.status(500).json({ message: err.message });
     }
@@ -235,7 +235,7 @@ async function reorderGames(profile, req, res) {
 function findEbayCardById(ebayItemId, ebayItemList) {
   for (let i = 0; i < ebayItemList.length; i++) {
     if (ebayItemId === ebayItemList[i].id) {
-      return ebayItemList[i].id;
+      return i;
     }
   }
   return null;
@@ -268,12 +268,13 @@ async function addEbayCard(req, res, next) {
     if (!gameToChange)
       return res.status(400).send({
         err_message: `no game with the name ${gameName} has been found in your wishlist`,
+        show_modal: true,
       });
 
     // check for existind ebayId
     const ebayOffers = gameToChange.watchedEbayOffers;
     const ifExist = findEbayCardById(ebayItemId, ebayOffers);
-    if (ifExist != null)
+    if (ifExist !== null)
       return res.status(400).send({
         err_message: `${ebayItemId} is already in your list`,
       });
@@ -322,7 +323,7 @@ async function isWatchedEbayCard(req, res, next) {
     // check for existind ebayId
     const ebayOffers = gameToSearch.watchedEbayOffers;
     const isExist = findEbayCardById(ebayItemId, ebayOffers);
-    if (isExist != null)
+    if (isExist !== null)
       return res.status(200).json({ success: 'in the list' });
     else return res.status(200).json({ missed: 'not in the list' });
   } catch (err) {
@@ -361,14 +362,18 @@ async function removeEbayCard(req, res, next) {
 
     // check for existind ebayId
     const ebayOffers = gameToChange.watchedEbayOffers;
-    const ebayCardId = findEbayCardById(ebayItemId, ebayOffers);
-    if (ebayCardId != null) ebayOffers.splice(ebayCardId, 1);
-    else
+    const ebayCardIndex = findEbayCardById(ebayItemId, ebayOffers);
+
+    if (ebayCardIndex !== null) {
+      ebayOffers.splice(ebayCardIndex, 1);
+    } else {
       return res.status(400).send({
-        err_message: `no ebayCard with id ${ebayCardId} found`,
+        err_message: `no ebayCard with id ${ebayCardIndex} found`,
       });
+    }
 
     await profile.save();
+
     res.success = `${ebayItemId} has been removed `;
   } catch (err) {
     return res.status(500).json({ message: err.message });

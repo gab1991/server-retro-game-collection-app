@@ -2,3 +2,5 @@
 /node_modules
 /assets
 /build
+/assets_minified_for_prod
+ecosystem.config.js

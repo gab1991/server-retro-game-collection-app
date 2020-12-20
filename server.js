@@ -54,7 +54,7 @@ app.use('/api/ebay', EbayRouter);
 //static files
 app.use(express.static('build'));
 
-app.use(express.static('assets'));
+app.use(express.static('assets_minified_for_prod'));
 
 // Basic html sending
 app.get('*', (req, res) => {
