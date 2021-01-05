@@ -394,7 +394,7 @@ async function getGameWatchedCards(req, res, next) {
 
 async function toggleEbaySection(req, res, next) {
 	const verifiedId = req.verifiedUserData._id;
-	const { gameName, platform, isShowed } = req.body;
+	const { game, platform, isShowed } = req.body;
 	try {
 		const profile = await Profile.findOne({ _id: verifiedId });
 
@@ -418,7 +418,7 @@ async function toggleEbaySection(req, res, next) {
 		}
 		const gamesForPlatform = searchPlatform.games;
 
-		const gameToSearch = getGameForUpd(gameName, gamesForPlatform);
+		const gameToSearch = getGameForUpd(game, gamesForPlatform);
 		// check for existing games
 		if (!gameToSearch) {
 			return res.status(200).json({ missed: 'not in the list' });
