@@ -166,7 +166,7 @@ async function removeGame(profile, req, res) {
 
 		let gamesForPlatform = foundPlatfrom.games;
 		// check for existing games
-		const gameInd = isGameInList(game.name, gamesForPlatform).index;
+		const gameInd = isGameInList(game, gamesForPlatform).index;
 
 		if (gameInd !== null) gamesForPlatform.splice(gameInd, 1);
 
@@ -174,7 +174,7 @@ async function removeGame(profile, req, res) {
 		if (gamesForPlatform.length === 0) userPlatforms.splice(updInd, 1);
 
 		await profile.save();
-		res.send({ success: `${game.name} has been removed successfully` });
+		res.send({ success: `${game} has been removed successfully` });
 	} catch (err) {
 		return res.status(500).send({ message: err });
 	}
