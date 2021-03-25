@@ -1,0 +1,11 @@
+{
+	"files.eol": "\n",
+	"editor.formatOnPaste": false,
+	"editor.formatOnSave": true,
+	"editor.formatOnSaveMode": "file",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true,
+		"source.fixAll.prettier": true
+	},
+	"typescript.updateImportsOnFileMove.enabled": "always"
+}
