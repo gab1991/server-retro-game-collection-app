@@ -4,7 +4,7 @@
 module.exports = {
   apps: [
     {
-      name: 'retro-game-collection',
+      name: 'server',
       script: './server.js',
       env: {
         NODE_ENV: 'development',

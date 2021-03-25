@@ -16,12 +16,12 @@
     "express": "^4.17.1",
     "googleapis": "^48.0.0",
     "jsonwebtoken": "^8.5.1",
-    "minisearch": "^2.1.4",
-    "mongoose": "^5.9.4",
+    "minisearch": "^2.6.2",
+    "mongoose": "^5.11.8",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.6"
   }
 }

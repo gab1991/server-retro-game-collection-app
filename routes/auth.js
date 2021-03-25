@@ -6,6 +6,7 @@ const {
   signInValidation,
   divideStr,
 } = require('../validation.js');
+const { verifyToken } = require('../tokenVerification/verifyToken');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -55,6 +56,7 @@ router.post('/sign_up', async (req, res) => {
 router.post('/sign_in', async (req, res) => {
   //validate
   const { error } = signInValidation(req.body);
+
   if (error) {
     const message = error.details[0].message;
     const divided = divideStr(message);
@@ -77,10 +79,33 @@ router.post('/sign_in', async (req, res) => {
       err_message: 'Username or password is not correct',
       field: 'password',
     });
+
   // Creating validation token
   const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
   //res.header('access-control-allow-headers', 'auth-token');
+  // console.log({ success: 'Log In', username: req.body.username, token: token });
   res.send({ success: 'Log In', username: req.body.username, token: token });
+});
+
+router.post('/check_credentials', verifyToken, async (req, res) => {
+  try {
+    const { username } = req.body;
+    console.log(username);
+    //token verification
+    const { _id } = req.verifiedUserData;
+    // check if this user exists
+    const user = await Profile.findOne({ _id });
+    const { username: dbUsername } = user;
+    if (dbUsername === username) {
+      res.send({ success: 'credentials are valid' });
+    } else {
+      return res
+        .status(400)
+        .send({ err_message: 'local username is different than one in db' });
+    }
+  } catch (err) {
+    return res.status(400).send({ err_message: err });
+  }
 });
 
 module.exports = router;

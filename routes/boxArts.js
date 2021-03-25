@@ -17,14 +17,14 @@ router.get('/:platform/:gameName', getBoxArt, (req, res) => {
 async function getBoxArt(req, res, next) {
   const readdir = promisify(fs.readdir);
   // parametr difens the match of a search in minisearch library. The bigger the number the better the match
-  const scoreThreshHold = 13;
+  const scoreThreshHold = 11;
   const host = req.get('host');
   const genericBox = `http://${host}/images/box_artworks/${req.params.platform}/generic_box.png`;
   let filePath;
 
   const regionsDir = path.resolve(
     __dirname,
-    `../assets/images/box_artworks/${req.params.platform}/`
+    `../assets_minified_for_prod/images/box_artworks/${req.params.platform}/`
   );
   const platformDir = await readdir(regionsDir);
   const regions = platformDir
@@ -40,7 +40,7 @@ async function getBoxArt(req, res, next) {
       const currentRegion = regions[i];
       const directory = path.resolve(
         __dirname,
-        `../assets/images/box_artworks/${req.params.platform}/${currentRegion}`
+        `../assets_minified_for_prod/images/box_artworks/${req.params.platform}/${currentRegion}`
       );
       const files = await readdir(directory);
       if (!files && i === regions.length - 1) {
