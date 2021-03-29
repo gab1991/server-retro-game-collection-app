@@ -19,9 +19,7 @@ mongoose.connect(db_url, {
 
 const db = mongoose.connection;
 db.on('error', (err) => console.error(err));
-db.once('open', () =>
-  console.log(`db connected || ${process.env.NODE_ENV.toUpperCase()}`)
-);
+db.once('open', () => console.log(`db connected || ${process.env.NODE_ENV.toUpperCase()}`));
 
 //allows server accepts jason
 app.use(express.json());
@@ -50,6 +48,10 @@ app.use('/api/youtube', youtubeRouter);
 //Ebay
 const EbayRouter = require('./routes/ebay.js');
 app.use('/api/ebay', EbayRouter);
+
+//RAWG
+const RAWGRouter = require('./routes/rawg.js');
+app.use('/api/rawg', RAWGRouter);
 
 //static files
 app.use(express.static('build'));
