@@ -182,9 +182,8 @@ async function removeGame(profile, req, res) {
 
 async function reorderGames(profile, req, res) {
   try {
-    const { platform, sortedGames, list } = req.body;
-    const updList = list;
-    const userPlatforms = profile[updList].platforms;
+    const { platform, newSortedGames, list } = req.body;
+    const userPlatforms = profile[list].platforms;
     const { foundPlatfrom } = getPlatform(platform, userPlatforms);
 
     // if this platform is not in the userlist
@@ -195,16 +194,17 @@ async function reorderGames(profile, req, res) {
     }
 
     // check for equal counts
-    if (foundPlatfrom.games.length !== sortedGames.length) {
+    if (foundPlatfrom.games.length !== newSortedGames.length) {
       return res.status(400).send({
         err_message: `Wrong number of games! In db ${foundPlatfrom.games.length} in request ${sortedGames.length}`,
       });
     }
 
-    foundPlatfrom.games = [...sortedGames];
+    foundPlatfrom.games = [...newSortedGames];
     await profile.save();
     res.send({ success: `reordering done` });
   } catch (err) {
+    console.error(err);
     return res.status(500).send({ message: err });
   }
 }

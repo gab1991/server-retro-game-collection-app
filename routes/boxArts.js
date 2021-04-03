@@ -8,6 +8,9 @@ const router = express.Router();
 //getting an box_art
 router.get('/:platform/:gameName', getBoxArt, (req, res) => {
   try {
+    res.set({
+      'Cache-Control': 'public, max-age=604800', // one week cache
+    });
     res.json(res.filePath);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -22,10 +25,7 @@ async function getBoxArt(req, res, next) {
   const genericBox = `http://${host}/images/box_artworks/${req.params.platform}/generic_box.png`;
   let filePath;
 
-  const regionsDir = path.resolve(
-    __dirname,
-    `../assets_minified_for_prod/images/box_artworks/${req.params.platform}/`
-  );
+  const regionsDir = path.resolve(__dirname, `../assets_minified_for_prod/images/box_artworks/${req.params.platform}/`);
   const platformDir = await readdir(regionsDir);
   const regions = platformDir
     .filter((item) => {
@@ -44,9 +44,7 @@ async function getBoxArt(req, res, next) {
       );
       const files = await readdir(directory);
       if (!files && i === regions.length - 1) {
-        return res
-          .status(404)
-          .json({ message: `Cannot read files in catalogue ${directory}` });
+        return res.status(404).json({ message: `Cannot read files in catalogue ${directory}` });
       }
 
       const regexTrim = /.+?(?=\s\()/g;
