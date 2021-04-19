@@ -33,13 +33,13 @@ router.get('/gamesForPlatform?:searchStr', getGamesForPlatforms, async (req, res
 async function getGameDetails(req, res, next) {
   const { slug } = req.params;
 
-  const url = `${RAWG_API_URL}/${slug}?${RAWG_API_KEY}`;
+  const url = `${RAWG_API_URL}/${slug}?key=${RAWG_API_KEY}`;
   const result = await fetch(url)
-    .then((res) => {
-      if (res.status !== 200) {
-        res.status(400).json({ err: `Couldn't fetch data from rawg` });
+    .then((rawgRes) => {
+      if (rawgRes.status !== 200) {
+        res.status(rawgRes.status).send({ err: `Couldn't fetch data from rawg` });
       }
-      return res.json();
+      return rawgRes.json();
     })
     .then((data) => data)
     .catch((err) => {
@@ -53,13 +53,13 @@ async function getGameDetails(req, res, next) {
 async function getGameScreenshots(req, res, next) {
   const { slug } = req.params;
 
-  const url = `${RAWG_API_URL}/${slug}/screenshots?${RAWG_API_KEY}`;
+  const url = `${RAWG_API_URL}/${slug}/screenshots?key=${RAWG_API_KEY}`;
   const result = await fetch(url)
-    .then((res) => {
-      if (res.status !== 200) {
-        res.status(400).json({ err: `Couldn't fetch data from rawg` });
+    .then((rawgRes) => {
+      if (rawgRes.status !== 200) {
+        res.status(rawgRes.status).json({ err: `Couldn't fetch data from rawg` });
       }
-      return res.json();
+      return rawgRes.json();
     })
     .then((data) => data)
     .catch((err) => {
@@ -74,18 +74,18 @@ async function getGamesForPlatforms(req, res, next) {
   const strQuery = querystring.stringify(req.query);
   console.log(strQuery);
 
-  const url = `${RAWG_API_URL}?${strQuery}&${RAWG_API_KEY}`;
-  console.log(url);
+  const url = `${RAWG_API_URL}?${strQuery}&key=${RAWG_API_KEY}`;
+
   const result = await fetch(url)
-    .then((res) => {
-      if (res.status !== 200) {
-        res.status(400).json({ err: `Couldn't fetch data from rawg` });
+    .then((rawgRes) => {
+      if (rawgRes.status !== 200) {
+        return res.status(rawgRes.status).send({ msg: `Couldn't fetch data from rawg` });
       }
-      return res.json();
+      return rawgRes.json();
     })
     .then((data) => data)
     .catch((err) => {
-      res.status(400).json({ err });
+      return res.status(400).json({ err });
     });
 
   res.games = result;
