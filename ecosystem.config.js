@@ -4,7 +4,7 @@
 module.exports = {
   apps: [
     {
-      name: 'server',
+      name: 'retro-game-backend',
       script: './server.js',
       env: {
         NODE_ENV: 'development',
@@ -18,6 +18,8 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production',
       },
+      out_file: '/dev/null',
+      error_file: '/dev/null',
     },
   ],
 };
