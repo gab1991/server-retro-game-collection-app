@@ -72,24 +72,21 @@ async function getGameScreenshots(req, res, next) {
 
 async function getGamesForPlatforms(req, res, next) {
   const strQuery = querystring.stringify(req.query);
-  console.log(strQuery);
 
   const url = `${RAWG_API_URL}?${strQuery}&key=${RAWG_API_KEY}`;
 
-  const result = await fetch(url)
-    .then((rawgRes) => {
-      if (rawgRes.status !== 200) {
-        return res.status(rawgRes.status).send({ msg: `Couldn't fetch data from rawg` });
-      }
-      return rawgRes.json();
-    })
-    .then((data) => data)
-    .catch((err) => {
-      return res.status(400).json({ err });
-    });
+  try {
+    const rawgRes = await fetch(url);
 
-  res.games = result;
-  next();
+    if (rawgRes.status !== 200) {
+      return res.status(rawgRes.status).send({ msg: `Couldn't fetch data from rawg` });
+    }
+
+    res.games = await rawgRes.json();
+    next();
+  } catch (err) {
+    return res.status(400).json({ err });
+  }
 }
 
 module.exports = router;
