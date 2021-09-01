@@ -11,11 +11,7 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   db_url = process.env.DATABASE_URL;
 }
-mongoose.connect(db_url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-});
+mongoose.connect(db_url, {});
 
 const db = mongoose.connection;
 db.on('error', (err) => console.error(err));

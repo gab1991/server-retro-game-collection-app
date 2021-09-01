@@ -2,22 +2,18 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const querystring = require('querystring');
-const fetch = require('node-fetch');
+const superagent = require('superagent');
 const apiKey = process.env.EBAY_API_KEY;
 const ebayFindingServiceUrl = process.env.EBAY_FINDING_SERVICE_URL;
 const ebayGetItemUrl = process.env.EBAY_GET_ITEM_URL;
 
-router.get(
-  '/searchList/:platform/:gameName/:sortOrder',
-  findByKeywords,
-  async (req, res) => {
-    try {
-      res.send(res.items);
-    } catch (err) {
-      res.status(400).send(err);
-    }
+router.get('/searchList/:platform/:gameName/:sortOrder', findByKeywords, async (req, res) => {
+  try {
+    res.send(res.items);
+  } catch (err) {
+    res.status(400).send(err);
   }
-);
+});
 
 router.get('/singleItem/:id', findSingleItem, async (req, res) => {
   try {
@@ -65,16 +61,25 @@ async function findByKeywords(req, res, next) {
     'aspectFilter(0).aspectValueName': ebayPlatformname,
   };
   const query = querystring.encode(queryParams);
+
   const url = `${ebayFindingServiceUrl}?${query}`;
 
-  const response = await fetch(url)
-    .then((res) => res.json())
-    .then((data) => data)
-    .catch((err) => err);
+  try {
+    const { text, status } = await superagent.get(url);
+    const data = JSON.parse(text);
 
-  res.items = response.findItemsByKeywordsResponse[0].searchResult;
-  next();
+    if (status !== 200) {
+      res.status(status).send({ err: `Couldn't fetch data from rawg` });
+    }
+
+    res.items = data.findItemsByKeywordsResponse[0].searchResult;
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ err });
+  }
 }
+
 let call = 0;
 async function findSingleItem(req, res, next) {
   const { id } = req.params;
@@ -92,14 +97,19 @@ async function findSingleItem(req, res, next) {
   const query = querystring.encode(queryParams);
   const url = `${ebayGetItemUrl}?${query}`;
 
-  console.log(call++);
-  const response = await fetch(url)
-    .then((res) => res.json())
-    .then((data) => data)
-    .catch((err) => err);
+  try {
+    const { status, text } = await superagent.get(url);
+    const data = JSON.parse(text);
 
-  res.item = response;
-  next();
+    if (status !== 200) {
+      res.status(status).send({ err: `Couldn't fetch data from rawg` });
+    }
+
+    res.item = data;
+    next();
+  } catch (err) {
+    res.status(400).json({ err });
+  }
 }
 
 async function getShippingCost(req, res, next) {
@@ -121,12 +131,18 @@ async function getShippingCost(req, res, next) {
   const query = querystring.encode(queryParams);
   const url = `${ebayGetItemUrl}?${query}`;
 
-  const response = await fetch(url)
-    .then((res) => res.json())
-    .then((data) => data)
-    .catch((err) => err);
+  try {
+    const { status, text } = await superagent.get(url);
+    const data = JSON.parse(text);
 
-  res.item = response;
-  next();
+    if (status !== 200) {
+      res.status(status).send({ err: `Couldn't fetch data from rawg` });
+    }
+
+    res.item = data;
+    next();
+  } catch (err) {
+    res.status(400).json({ err });
+  }
 }
 module.exports = router;

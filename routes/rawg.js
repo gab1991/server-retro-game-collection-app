@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const querystring = require('query-string');
-const fetch = require('node-fetch');
+const superagent = require('superagent');
 const router = express.Router();
 const RAWG_API_KEY = process.env.RAWG_API_KEY;
 const RAWG_API_URL = process.env.RAWG_API_URL;
@@ -34,40 +34,38 @@ async function getGameDetails(req, res, next) {
   const { slug } = req.params;
 
   const url = `${RAWG_API_URL}/${slug}?key=${RAWG_API_KEY}`;
-  const result = await fetch(url)
-    .then((rawgRes) => {
-      if (rawgRes.status !== 200) {
-        res.status(rawgRes.status).send({ err: `Couldn't fetch data from rawg` });
-      }
-      return rawgRes.json();
-    })
-    .then((data) => data)
-    .catch((err) => {
-      res.status(400).json({ err });
-    });
 
-  res.gameDetails = result;
-  next();
+  try {
+    const { status, body } = await superagent.get(url);
+
+    if (status !== 200) {
+      res.status(status).send({ err: `Couldn't fetch data from rawg` });
+    }
+
+    res.gameDetails = body;
+    next();
+  } catch (err) {
+    res.status(400).json({ err });
+  }
 }
 
 async function getGameScreenshots(req, res, next) {
   const { slug } = req.params;
 
   const url = `${RAWG_API_URL}/${slug}/screenshots?key=${RAWG_API_KEY}`;
-  const result = await fetch(url)
-    .then((rawgRes) => {
-      if (rawgRes.status !== 200) {
-        res.status(rawgRes.status).json({ err: `Couldn't fetch data from rawg` });
-      }
-      return rawgRes.json();
-    })
-    .then((data) => data)
-    .catch((err) => {
-      res.status(400).json({ err });
-    });
 
-  res.screenshots = result;
-  next();
+  try {
+    const { status, body } = await superagent.get(url);
+
+    if (status !== 200) {
+      res.status(status).send({ err: `Couldn't fetch data from rawg` });
+    }
+
+    res.screenshots = body;
+    next();
+  } catch (err) {
+    res.status(400).json({ err });
+  }
 }
 
 async function getGamesForPlatforms(req, res, next) {
@@ -76,16 +74,16 @@ async function getGamesForPlatforms(req, res, next) {
   const url = `${RAWG_API_URL}?${strQuery}&key=${RAWG_API_KEY}`;
 
   try {
-    const rawgRes = await fetch(url);
+    const { status, body } = await superagent.get(url);
 
-    if (rawgRes.status !== 200) {
-      return res.status(rawgRes.status).send({ msg: `Couldn't fetch data from rawg` });
+    if (status !== 200) {
+      res.status(status).send({ err: `Couldn't fetch data from rawg` });
     }
 
-    res.games = await rawgRes.json();
+    res.games = body;
     next();
   } catch (err) {
-    return res.status(400).json({ err });
+    res.status(400).json({ err });
   }
 }
 
