@@ -273,7 +273,6 @@ async function addEbayCard(req, res, next) {
 async function isWatchedEbayCard(req, res, next) {
   const verifiedId = req.verifiedUserData._id;
   const { ebayItemId, game, platform } = req.body;
-  console.log({ ebayItemId, game, platform });
 
   try {
     const profile = await Profile.findOne({ _id: verifiedId });
