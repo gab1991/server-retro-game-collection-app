@@ -9,6 +9,9 @@ module.exports = {
     ecmaVersion: 12,
   },
   rules: {
+    'comma-dangle': 'off',
+    'no-plusplus': 'off',
+    'max-len': 'off',
     'no-underscore-dangle': 'off',
     camelcase: 'off',
     'node/exports-style': ['error', 'module.exports'],
