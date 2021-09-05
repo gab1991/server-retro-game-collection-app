@@ -9,6 +9,7 @@ module.exports = {
     ecmaVersion: 12,
   },
   rules: {
+    camelcase: 'off',
     'node/exports-style': ['error', 'module.exports'],
     'node/file-extension-in-import': ['error', 'always'],
     'node/prefer-global/buffer': ['error', 'always'],
