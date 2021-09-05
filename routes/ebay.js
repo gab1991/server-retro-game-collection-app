@@ -1,8 +1,10 @@
 require('dotenv').config();
 const express = require('express');
+
 const router = express.Router();
 const querystring = require('querystring');
 const superagent = require('superagent');
+
 const apiKey = process.env.EBAY_API_KEY;
 const ebayFindingServiceUrl = process.env.EBAY_FINDING_SERVICE_URL;
 const ebayGetItemUrl = process.env.EBAY_GET_ITEM_URL;
@@ -55,7 +57,7 @@ async function findByKeywords(req, res, next) {
     'GLOBAL-ID': 'EBAY-US',
     'SECURITY-APPNAME': apiKey,
     'RESPONSE-DATA-FORMAT': 'JSON',
-    sortOrder: sortOrder,
+    sortOrder,
     keywords: gameName,
     'aspectFilter(0).aspectName': 'Platform',
     'aspectFilter(0).aspectValueName': ebayPlatformname,
@@ -69,7 +71,7 @@ async function findByKeywords(req, res, next) {
     const data = JSON.parse(text);
 
     if (status !== 200) {
-      res.status(status).send({ err: `Couldn't fetch data from rawg` });
+      res.status(status).send({ err: "Couldn't fetch data from rawg" });
     }
 
     res.items = data.findItemsByKeywordsResponse[0].searchResult;
@@ -80,7 +82,7 @@ async function findByKeywords(req, res, next) {
   }
 }
 
-let call = 0;
+const call = 0;
 async function findSingleItem(req, res, next) {
   const { id } = req.params;
 
@@ -102,7 +104,7 @@ async function findSingleItem(req, res, next) {
     const data = JSON.parse(text);
 
     if (status !== 200) {
-      res.status(status).send({ err: `Couldn't fetch data from rawg` });
+      res.status(status).send({ err: "Couldn't fetch data from rawg" });
     }
 
     res.item = data;
@@ -136,7 +138,7 @@ async function getShippingCost(req, res, next) {
     const data = JSON.parse(text);
 
     if (status !== 200) {
-      res.status(status).send({ err: `Couldn't fetch data from rawg` });
+      res.status(status).send({ err: "Couldn't fetch data from rawg" });
     }
 
     res.item = data;
