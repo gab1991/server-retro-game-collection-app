@@ -9,6 +9,7 @@ module.exports = {
     ecmaVersion: 12,
   },
   rules: {
+    'object-curly-newline': 'off',
     'comma-dangle': 'off',
     'no-plusplus': 'off',
     'max-len': 'off',

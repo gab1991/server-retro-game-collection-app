@@ -2,9 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const querystring = require('query-string');
 const superagent = require('superagent');
+
 const router = express.Router();
-const RAWG_API_KEY = process.env.RAWG_API_KEY;
-const RAWG_API_URL = process.env.RAWG_API_URL;
+const { RAWG_API_KEY } = process.env;
+const { RAWG_API_URL } = process.env;
 
 router.get('/gameDetails/:slug', getGameDetails, async (req, res) => {
   try {
@@ -39,7 +40,7 @@ async function getGameDetails(req, res, next) {
     const { status, body } = await superagent.get(url);
 
     if (status !== 200) {
-      res.status(status).send({ err: `Couldn't fetch data from rawg` });
+      res.status(status).send({ err: "Couldn't fetch data from rawg" });
     }
 
     res.gameDetails = body;
@@ -58,7 +59,7 @@ async function getGameScreenshots(req, res, next) {
     const { status, body } = await superagent.get(url);
 
     if (status !== 200) {
-      res.status(status).send({ err: `Couldn't fetch data from rawg` });
+      res.status(status).send({ err: "Couldn't fetch data from rawg" });
     }
 
     res.screenshots = body;
@@ -77,7 +78,7 @@ async function getGamesForPlatforms(req, res, next) {
     const { status, body } = await superagent.get(url);
 
     if (status !== 200) {
-      res.status(status).send({ err: `Couldn't fetch data from rawg` });
+      res.status(status).send({ err: "Couldn't fetch data from rawg" });
     }
 
     res.games = body;
