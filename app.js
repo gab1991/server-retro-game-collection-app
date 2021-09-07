@@ -1,42 +1,49 @@
 const express = require('express');
+
 const app = express();
 
 const cors = require('cors');
 const path = require('path');
 
-//allows server accepts jason
+// allows server accepts jason
 app.use(express.json());
 
-//allows cors requests
+// allows cors requests
 app.use(cors());
 
-//CREATING ROUTES
+// CREATING ROUTES
 
-//box_arts
+// box_arts
 const boxArtRouter = require('./routes/boxArts.js');
+
 app.use('/api/box_arts', boxArtRouter);
 
-//authentification
+// authentification
 const authRouter = require('./routes/auth.js');
+
 app.use('/api/auth', authRouter);
 
-//profile
+// profile
 const profileRouter = require('./routes/profile.js');
+
 app.use('/api/profile', profileRouter);
 
-//Youtube
+// Youtube
 const youtubeRouter = require('./routes/youtube.js');
+
 app.use('/api/youtube', youtubeRouter);
 
-//Ebay
+// Ebay
 const EbayRouter = require('./routes/ebay.js');
+
 app.use('/api/ebay', EbayRouter);
 
-//RAWG
+// RAWG
 const RAWGRouter = require('./routes/rawg.js');
+
 app.use('/api/rawg', RAWGRouter);
 
-//static files
+// static files
 app.use(express.static('build'));
 
 app.use(express.static('assets_minified_for_prod'));
