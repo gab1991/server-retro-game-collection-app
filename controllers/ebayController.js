@@ -51,7 +51,6 @@ const findByKeywords = async (req, res) => {
     res.items = data.findItemsByKeywordsResponse[0].searchResult;
     return res.send(res.items);
   } catch (err) {
-    console.error(err);
     res.status(400).json({ err });
   }
 };

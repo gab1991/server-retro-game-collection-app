@@ -1,9 +1,9 @@
 const express = require('express');
-
-const app = express();
-
 const cors = require('cors');
 const path = require('path');
+const { errorHandling } = require('./midllewares/errorHandling');
+
+const app = express();
 
 // allows server accepts jason
 app.use(express.json());
@@ -52,5 +52,8 @@ app.use(express.static('assets_minified_for_prod'));
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
 });
+
+// Error handling
+app.use(errorHandling);
 
 module.exports = app;

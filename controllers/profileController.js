@@ -155,7 +155,6 @@ async function reorderGames(profile, req, res) {
       success: 'reordering done',
     });
   } catch (err) {
-    console.error(err);
     return res.status(500).send({
       message: err,
     });
@@ -171,22 +170,23 @@ function findEbayCardById(ebayItemId, ebayItemList) {
   return null;
 }
 
-const getProfile = async (req, res) => {
+const getProfile = async (req, res, next) => {
   const verifiedId = req.verifiedUserData._id;
+
   try {
     const profile = await Profile.findOne({
       _id: verifiedId,
     });
+
     if (profile.length === 0) {
       return res.status(400).send({
         err_message: 'no such user',
       });
     }
+
     return res.send(profile);
   } catch (err) {
-    return res.status(500).json({
-      message: err.message,
-    });
+    return next(err);
   }
 };
 

@@ -23,10 +23,7 @@ const getVideo = async (req, res) => {
       res.firstVideoId = response.data.items[0].id.videoId;
       return res.json(res.firstVideoId);
     })
-    .catch((err) => {
-      console.log(err.errors);
-      return res.status(500).json({ message: err.errors });
-    });
+    .catch((err) => res.status(500).json({ message: err.errors }));
 };
 
 module.exports = {
