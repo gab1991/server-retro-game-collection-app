@@ -15,15 +15,18 @@ const signUp = async (req, res) => {
       field: divided[0],
     });
   }
-  // check if this user already exists
-  const userEsxists = await Profile.findOne({ username: req.body.username });
-  const emailEsxists = await Profile.findOne({ email: req.body.email });
 
-  if (userEsxists) {
-    return res.status(400).send({ err_message: 'This username already exists', field: 'username' });
-  }
-  if (emailEsxists) {
-    return res.status(400).send({ err_message: 'This email already exists', field: 'email' });
+  // check if this user already exists
+  const existingUser = await Profile.findOne({ $or: [{ username: req.body.username }, { email: req.body.email }] });
+
+  if (existingUser) {
+    if (existingUser.username === req.body.username) {
+      return res.status(400).send({ err_message: 'This username is already taken', field: 'username' });
+    }
+    if (existingUser.email === req.body.email) {
+      return res.status(400).send({ err_message: 'This email is already taken', field: 'email' });
+    }
+    return res.status(400).send({ err_message: 'This user already exists', field: 'unknown' });
   }
 
   // Hash passwords
@@ -47,7 +50,6 @@ const signUp = async (req, res) => {
 };
 
 const signIn = async (req, res) => {
-  // validate
   const { error } = signInValidation(req.body);
 
   if (error) {
@@ -60,12 +62,14 @@ const signIn = async (req, res) => {
   }
   // check if this user exists
   const user = await Profile.findOne({ username: req.body.username });
+
   if (!user) {
     return res.status(400).send({ err_message: "Username doesn't exist ", field: 'username' });
   }
 
   // Password is correct
   const validPass = await bcrypt.compare(req.body.password, user.password);
+
   if (!validPass) {
     return res.status(400).send({
       err_message: 'Username or password is not correct',
@@ -85,6 +89,7 @@ const checkCredentials = async (req, res) => {
 
     // token verification
     const { _id } = req.verifiedUserData;
+
     // check if this user exists
     const user = await Profile.findOne({ _id });
     const { username: dbUsername } = user;

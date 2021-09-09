@@ -11,17 +11,16 @@ app.use(express.json());
 // allows cors requests
 app.use(cors());
 
-// CREATING ROUTES
+/* ROUTES */
+// authentification
+const authRouter = require('./routes/auth.js');
+
+app.use('/api/auth', authRouter);
 
 // box_arts
 const boxArtRouter = require('./routes/boxArts.js');
 
 app.use('/api/box_arts', boxArtRouter);
-
-// authentification
-const authRouter = require('./routes/auth.js');
-
-app.use('/api/auth', authRouter);
 
 // profile
 const profileRouter = require('./routes/profile.js');
