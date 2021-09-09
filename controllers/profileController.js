@@ -2,6 +2,23 @@ const Profile = require('../models/Profile.js');
 
 // HELPERS
 
+const fetchVerifiedProfile = async (req, res, next) => {
+  const verifiedId = req.verifiedUserData._id;
+
+  const profile = await Profile.findOne({
+    _id: verifiedId,
+  });
+
+  if (!profile) {
+    return res.status(400).send({
+      err_message: 'No such user',
+    });
+  }
+
+  req.profile = profile;
+  return next();
+};
+
 function getPlatform(platformName, platformList) {
   let foundPlatfrom;
   let updInd;
@@ -44,55 +61,6 @@ function getGameForUpd(gameName, gameList) {
   const { index } = isGameInList(gameName, gameList);
   if (index == null) return null;
   return gameList[index];
-}
-
-async function addGame(profile, req, res) {
-  try {
-    const { platform, game, list } = req.body;
-
-    // check wich list to update
-    const userList = list === 'owned_list' ? 'owned_list' : 'wish_list';
-    const userPlatforms = profile[userList].platforms;
-    let { foundPlatfrom } = getPlatform(platform, userPlatforms);
-    // if this platform is not in the userlist
-    if (!foundPlatfrom) {
-      foundPlatfrom = addNewPlatfrom(
-        {
-          name: platform,
-          games: [],
-        },
-        userPlatforms
-      );
-    }
-
-    // {
-    //   userPlatforms.push({ name: platform, games: [] });
-    //   const lastIdx = userPlatforms.length - 1;
-    //   foundPlatfrom = userPlatforms[lastIdx];
-    // }
-
-    const gamesForPlatform = foundPlatfrom.games;
-    // check for existing games
-    const isInList = isGameInList(game.name, gamesForPlatform).result;
-    if (isInList) {
-      return res.status(400).send({
-        err_message: `${game.name} is already in your colletion`,
-      });
-    }
-    gamesForPlatform.push({
-      slug: game.slug,
-      name: game.name,
-      date: Date.now(),
-    });
-    await profile.save();
-    return res.send({
-      success: `${game.name} has been added successfully`,
-    });
-  } catch (err) {
-    return res.status(500).send({
-      message: err,
-    });
-  }
 }
 
 async function removeGame(profile, req, res) {
@@ -190,6 +158,52 @@ const getProfile = async (req, res, next) => {
   }
 };
 
+const addGame = async (req, res) => {
+  const { platform, game, list } = req.body;
+  const { profile } = req;
+
+  try {
+    const userPlatforms = profile[list].platforms;
+    let { foundPlatfrom } = getPlatform(platform, userPlatforms);
+
+    // if this platform is not in the userlist
+    if (!foundPlatfrom) {
+      foundPlatfrom = addNewPlatfrom(
+        {
+          name: platform,
+          games: [],
+        },
+        userPlatforms
+      );
+    }
+    const gamesForPlatform = foundPlatfrom.games;
+    // check for existing games
+    const isInList = isGameInList(game.name, gamesForPlatform).result;
+
+    if (isInList) {
+      return res.status(400).send({
+        err_message: `${game.name} is already in your colletion`,
+      });
+    }
+
+    gamesForPlatform.push({
+      slug: game.slug,
+      name: game.name,
+      date: Date.now(),
+    });
+
+    await profile.save();
+
+    return res.send({
+      success: `${game.name} has been added successfully`,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+
 const updateProfile = async (req, res) => {
   const verifiedId = req.verifiedUserData._id;
   const { action } = req.body;
@@ -206,8 +220,6 @@ const updateProfile = async (req, res) => {
     }
 
     switch (action) {
-      case 'addGame':
-        return addGame(profile, req, res);
       case 'removeGame':
         return removeGame(profile, req, res);
       case 'reorder':
@@ -508,4 +520,6 @@ module.exports = {
   removeEbayCard,
   getGameWatchedCards,
   toggleEbaySection,
+  addGame,
+  fetchVerifiedProfile,
 };
