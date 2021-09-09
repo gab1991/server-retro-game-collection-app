@@ -193,13 +193,15 @@ const getProfile = async (req, res, next) => {
 const updateProfile = async (req, res) => {
   const verifiedId = req.verifiedUserData._id;
   const { action } = req.body;
+
   try {
     const profile = await Profile.findOne({
       _id: verifiedId,
     });
-    if (profile.length === 0) {
+
+    if (!profile.length) {
       return res.status(400).send({
-        err_message: 'no such user',
+        err_message: 'No such user',
       });
     }
 

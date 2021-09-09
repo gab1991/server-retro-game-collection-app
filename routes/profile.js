@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
-const verify = require('../tokenVerification/verifyToken.js');
+
 const {
   getProfile,
   updateProfile,
@@ -12,18 +12,20 @@ const {
   toggleEbaySection,
 } = require('../controllers/profileController');
 
-router.get('/', verify.verifyToken, getProfile);
+router.get('/', getProfile);
 
-router.post('/update', verify.verifyToken, updateProfile);
+router.get('/games/add', getProfile);
 
-router.post('/isWatchedEbayCard', verify.verifyToken, getIsWatchedEbayCard);
+router.post('/update', updateProfile);
 
-router.post('/addEbayCard', verify.verifyToken, addEbayCard);
+router.post('/isWatchedEbayCard', getIsWatchedEbayCard);
 
-router.post('/removeEbayCard', verify.verifyToken, removeEbayCard);
+router.post('/addEbayCard', addEbayCard);
 
-router.get('/getGameWatchedCards/:platform/:gameName', verify.verifyToken, getGameWatchedCards);
+router.post('/removeEbayCard', removeEbayCard);
 
-router.post('/toggleEbaySection', verify.verifyToken, toggleEbaySection);
+router.get('/getGameWatchedCards/:platform/:gameName', getGameWatchedCards);
+
+router.post('/toggleEbaySection', toggleEbaySection);
 
 module.exports = router;

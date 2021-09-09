@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const verifyToken = (req, res, next) => {
+const verification = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -8,6 +8,7 @@ const verifyToken = (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
+
   if (!token) {
     return res.status(401).json({ access_denied: 'No token provided' });
   }
@@ -21,4 +22,4 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-module.exports.verifyToken = verifyToken;
+module.exports = { verification };
