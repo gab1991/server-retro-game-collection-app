@@ -275,21 +275,11 @@ const removeEbayCard = async (req, res) => {
 
 const getGameWatchedCards = async (req, res) => {
   const { gameName, platform } = req.params;
-  const verifiedId = req.verifiedUserId;
+
+  const { profile } = req;
 
   try {
-    const profile = await Profile.findOne({
-      _id: verifiedId,
-    });
-
-    if (profile.length === 0) {
-      return res.status(400).send({
-        err_message: 'no such user',
-      });
-    }
-    // check which list to update
-    const userList = 'wish_list';
-    const userPlatforms = profile[userList].platforms;
+    const userPlatforms = profile.wish_list.platforms;
 
     const { foundPlatfrom } = getPlatform(platform, userPlatforms);
     // if this platform is not in the userlist
@@ -310,7 +300,9 @@ const getGameWatchedCards = async (req, res) => {
 
     // check for existind ebayId
     const ebayOffers = gameToChange.watchedEbayOffers;
+
     res.success = ebayOffers;
+
     return res.json(res.success);
   } catch (err) {
     return res.status(500).json({

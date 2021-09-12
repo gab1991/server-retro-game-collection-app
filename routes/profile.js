@@ -31,9 +31,9 @@ router.post('/ebayCards', addEbayCard);
 
 router.delete('/ebayCards', removeEbayCard);
 
-router.get('/ebayCards/isWatched/:platform/:gameName/:ebayItemId', getIsWatchedEbayCard);
+router.get('/ebayCards/watched/:platform/:gameName', getGameWatchedCards);
 
-router.get('/getGameWatchedCards/:platform/:gameName', getGameWatchedCards);
+router.get('/ebayCards/isWatched/:platform/:gameName/:ebayItemId', getIsWatchedEbayCard);
 
 router.post('/toggleEbaySection', toggleEbaySection);
 
