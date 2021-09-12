@@ -1,5 +1,5 @@
 const express = require('express');
-const { fetchVerifiedProfile } = require('../midllewares');
+const { fetchVerifiedProfile, verification } = require('../midllewares');
 
 const router = express.Router();
 
@@ -15,19 +15,23 @@ const {
   reorderGames,
 } = require('../controllers/profileController/profileController');
 
+// Route specific middlewares
+router.use(verification, fetchVerifiedProfile);
+
+// Endpoints
 router.get('/', getProfile);
 
-router.post('/games', fetchVerifiedProfile, addGame);
+router.post('/games', addGame);
 
-router.delete('/games', fetchVerifiedProfile, removeGame);
+router.delete('/games', removeGame);
 
-router.put('/games/reorder', fetchVerifiedProfile, reorderGames);
+router.put('/games/reorder', reorderGames);
 
-router.post('/ebayCards', fetchVerifiedProfile, addEbayCard);
+router.post('/ebayCards', addEbayCard);
 
-router.get('/ebayCards/isWatched/:platform/:gameName/:ebayItemId', fetchVerifiedProfile, getIsWatchedEbayCard);
+router.delete('/ebayCards', removeEbayCard);
 
-router.post('/removeEbayCard', removeEbayCard);
+router.get('/ebayCards/isWatched/:platform/:gameName/:ebayItemId', getIsWatchedEbayCard);
 
 router.get('/getGameWatchedCards/:platform/:gameName', getGameWatchedCards);
 

@@ -43,4 +43,13 @@ const getGameForUpd = (gameName, gameList) => {
   return gameList[index];
 };
 
-module.exports = { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform };
+const findEbayCardById = (ebayItemId, ebayItemList) => {
+  for (let i = 0; i < ebayItemList.length; i++) {
+    if (ebayItemId === ebayItemList[i].id) {
+      return i;
+    }
+  }
+  return null;
+};
+
+module.exports = { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform, findEbayCardById };

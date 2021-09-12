@@ -1,5 +1,5 @@
 const Profile = require('../../models/Profile.js');
-const { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform } = require('./helpers');
+const { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform, findEbayCardById } = require('./helpers');
 
 const reorderGames = async (req, res) => {
   const { platform, newSortedGames, list } = req.body;
@@ -37,33 +37,9 @@ const reorderGames = async (req, res) => {
   }
 };
 
-function findEbayCardById(ebayItemId, ebayItemList) {
-  for (let i = 0; i < ebayItemList.length; i++) {
-    if (ebayItemId === ebayItemList[i].id) {
-      return i;
-    }
-  }
-  return null;
-}
-
-const getProfile = async (req, res, next) => {
-  const verifiedId = req.verifiedUserId;
-
-  try {
-    const profile = await Profile.findOne({
-      _id: verifiedId,
-    });
-
-    if (profile.length === 0) {
-      return res.status(400).send({
-        err_message: 'no such user',
-      });
-    }
-
-    return res.send(profile);
-  } catch (err) {
-    return next(err);
-  }
+const getProfile = async (req, res) => {
+  const { profile } = req;
+  return res.send(profile);
 };
 
 const addGame = async (req, res) => {
@@ -249,20 +225,10 @@ const addEbayCard = async (req, res) => {
 
 const removeEbayCard = async (req, res) => {
   const { ebayItemId, game, platform } = req.body;
-  const verifiedId = req.verifiedUserId;
+  const { profile } = req;
 
   try {
-    const profile = await Profile.findOne({
-      _id: verifiedId,
-    });
-    if (profile.length === 0) {
-      return res.status(400).send({
-        err_message: 'no such user',
-      });
-    }
-    // check which list to update
-    const userList = 'wish_list';
-    const userPlatforms = profile[userList].platforms;
+    const userPlatforms = profile.wish_list.platforms;
 
     const { foundPlatfrom } = getPlatform(platform, userPlatforms);
     // if this platform is not in the userlist

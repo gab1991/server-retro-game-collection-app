@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { errorHandling, verification } = require('./midllewares');
+const { errorHandling } = require('./midllewares');
 
 const app = express();
 
@@ -25,7 +25,7 @@ app.use('/api/box_arts', boxArtRouter);
 // profile
 const profileRouter = require('./routes/profile.js');
 
-app.use('/api/profile', verification, profileRouter);
+app.use('/api/profile', profileRouter);
 
 // Youtube
 const youtubeRouter = require('./routes/youtube.js');
