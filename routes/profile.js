@@ -12,11 +12,14 @@ const {
   getGameWatchedCards,
   toggleEbaySection,
   addGame,
+  removeGame,
 } = require('../controllers/profileController');
 
 router.get('/', getProfile);
 
 router.post('/games', fetchVerifiedProfile, addGame);
+
+router.delete('/games', fetchVerifiedProfile, removeGame);
 
 router.post('/update', updateProfile);
 

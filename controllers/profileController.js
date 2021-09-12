@@ -46,40 +46,6 @@ function getGameForUpd(gameName, gameList) {
   return gameList[index];
 }
 
-async function removeGame(profile, req, res) {
-  try {
-    const { platform, game, list } = req.body;
-    const userList = list === 'owned_list' ? 'owned_list' : 'wish_list';
-    const userPlatforms = profile[userList].platforms;
-    const { foundPlatfrom, updInd } = getPlatform(platform, userPlatforms);
-
-    // if this platform is not in the userlist
-    if (!foundPlatfrom) {
-      return res.status(400).send({
-        err_message: "Could'nt find this platfrom in user's platforms",
-      });
-    }
-
-    const gamesForPlatform = foundPlatfrom.games;
-    // check for existing games
-    const gameInd = isGameInList(game, gamesForPlatform).index;
-
-    if (gameInd !== null) gamesForPlatform.splice(gameInd, 1);
-
-    // Check wheter remove directory or not
-    if (gamesForPlatform.length === 0) userPlatforms.splice(updInd, 1);
-
-    await profile.save();
-    return res.send({
-      success: `${game} has been removed successfully`,
-    });
-  } catch (err) {
-    return res.status(500).send({
-      message: err,
-    });
-  }
-}
-
 async function reorderGames(profile, req, res) {
   try {
     const { platform, newSortedGames, list } = req.body;
@@ -187,6 +153,45 @@ const addGame = async (req, res) => {
   }
 };
 
+const removeGame = async (req, res) => {
+  const { platform, game, list } = req.body;
+  const { profile } = req;
+
+  try {
+    const userPlatforms = profile[list].platforms;
+    const { foundPlatfrom, updInd } = getPlatform(platform, userPlatforms);
+
+    // if this platform is not in the userlist
+    if (!foundPlatfrom) {
+      return res.status(400).send({
+        err_message: "Could'nt find this platfrom in user's platforms",
+      });
+    }
+
+    const gamesForPlatform = foundPlatfrom.games;
+    // check for existing games
+    const gameInd = isGameInList(game, gamesForPlatform).index;
+
+    if (gameInd !== null) {
+      gamesForPlatform.splice(gameInd, 1);
+    }
+
+    // Check wheter remove directory or not
+    if (gamesForPlatform.length === 0) {
+      userPlatforms.splice(updInd, 1);
+    }
+
+    await profile.save();
+    return res.send({
+      success: `${game} has been removed successfully`,
+    });
+  } catch (err) {
+    return res.status(500).send({
+      message: err,
+    });
+  }
+};
+
 const updateProfile = async (req, res) => {
   const verifiedId = req.verifiedUserId;
   const { action } = req.body;
@@ -203,8 +208,6 @@ const updateProfile = async (req, res) => {
     }
 
     switch (action) {
-      case 'removeGame':
-        return removeGame(profile, req, res);
       case 'reorder':
         return reorderGames(profile, req, res);
       default:
@@ -504,4 +507,5 @@ module.exports = {
   getGameWatchedCards,
   toggleEbaySection,
   addGame,
+  removeGame,
 };
