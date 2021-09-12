@@ -2,23 +2,6 @@ const Profile = require('../models/Profile.js');
 
 // HELPERS
 
-const fetchVerifiedProfile = async (req, res, next) => {
-  const verifiedId = req.verifiedUserId;
-
-  const profile = await Profile.findOne({
-    _id: verifiedId,
-  });
-
-  if (!profile) {
-    return res.status(400).send({
-      err_message: 'No such user',
-    });
-  }
-
-  req.profile = profile;
-  return next();
-};
-
 function getPlatform(platformName, platformList) {
   let foundPlatfrom;
   let updInd;
@@ -521,5 +504,4 @@ module.exports = {
   getGameWatchedCards,
   toggleEbaySection,
   addGame,
-  fetchVerifiedProfile,
 };

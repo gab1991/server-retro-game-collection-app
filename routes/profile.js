@@ -1,4 +1,5 @@
 const express = require('express');
+const { fetchVerifiedProfile } = require('../midllewares');
 
 const router = express.Router();
 
@@ -11,7 +12,6 @@ const {
   getGameWatchedCards,
   toggleEbaySection,
   addGame,
-  fetchVerifiedProfile,
 } = require('../controllers/profileController');
 
 router.get('/', getProfile);
