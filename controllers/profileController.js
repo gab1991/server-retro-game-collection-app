@@ -127,24 +127,23 @@ const addGame = async (req, res) => {
     }
     const gamesForPlatform = foundPlatfrom.games;
     // check for existing games
-    const isInList = isGameInList(game.name, gamesForPlatform).result;
+    const isInList = isGameInList(game, gamesForPlatform).result;
 
     if (isInList) {
       return res.status(400).send({
-        err_message: `${game.name} is already in your colletion`,
+        err_message: `${game} is already in your colletion`,
       });
     }
 
     gamesForPlatform.push({
-      slug: game.slug,
-      name: game.name,
+      name: game,
       date: Date.now(),
     });
 
     await profile.save();
 
     return res.send({
-      success: `${game.name} has been added successfully`,
+      success: `${game} has been added successfully`,
     });
   } catch (err) {
     return res.status(500).json({
