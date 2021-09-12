@@ -6,22 +6,19 @@ const apiKey = process.env.EBAY_API_KEY;
 const ebayFindingServiceUrl = process.env.EBAY_FINDING_SERVICE_URL;
 const ebayGetItemUrl = process.env.EBAY_GET_ITEM_URL;
 
+const RawgToEbayPlatformMap = {
+  Genesis: 'Sega Genesis',
+  NES: 'Nintendo NES',
+  PlayStation: 'Sony PlayStation 1',
+};
+
 const findByKeywords = async (req, res) => {
   const { platform, gameName, sortOrder = 'BestMatch' } = req.params;
 
-  let ebayPlatformname;
-  switch (platform) {
-    case 'Genesis':
-      ebayPlatformname = 'Sega Genesis';
-      break;
-    case 'NES':
-      ebayPlatformname = 'Nintendo NES';
-      break;
-    case 'PlayStation':
-      ebayPlatformname = 'Sony PlayStation 1';
-      break;
-    default:
-      ebayPlatformname = '';
+  const ebayPlatformname = RawgToEbayPlatformMap[platform];
+
+  if (!ebayPlatformname) {
+    return res.status(400).json({ err_message: 'No such platform available ' });
   }
 
   const queryParams = {
@@ -36,7 +33,7 @@ const findByKeywords = async (req, res) => {
     'aspectFilter(0).aspectName': 'Platform',
     'aspectFilter(0).aspectValueName': ebayPlatformname,
   };
-  const query = querystring.encode(queryParams);
+  const query = new URLSearchParams(queryParams).toString();
 
   const url = `${ebayFindingServiceUrl}?${query}`;
 
@@ -45,13 +42,14 @@ const findByKeywords = async (req, res) => {
     const data = JSON.parse(text);
 
     if (status !== 200) {
-      res.status(status).send({ err: "Couldn't fetch data from rawg" });
+      return res.status(status).send({ err: "Couldn't fetch data from rawg" });
     }
 
     res.items = data.findItemsByKeywordsResponse[0].searchResult;
+
     return res.send(res.items);
   } catch (err) {
-    res.status(400).json({ err });
+    return res.status(400).json({ err });
   }
 };
 
@@ -68,7 +66,7 @@ const findSingleItem = async (req, res) => {
     IncludeSelector: 'Description,ItemSpecifics,ShippingCosts',
   };
 
-  const query = querystring.encode(queryParams);
+  const query = new URLSearchParams(queryParams).toString();
   const url = `${ebayGetItemUrl}?${query}`;
 
   try {
@@ -82,7 +80,7 @@ const findSingleItem = async (req, res) => {
     res.item = data;
     return res.send(res.item);
   } catch (err) {
-    res.status(400).json({ err });
+    return res.status(400).json({ err });
   }
 };
 
@@ -110,13 +108,13 @@ const getShippingCost = async (req, res) => {
     const data = JSON.parse(text);
 
     if (status !== 200) {
-      res.status(status).send({ err: "Couldn't fetch data from rawg" });
+      return res.status(status).send({ err: "Couldn't fetch data from rawg" });
     }
 
     res.item = data;
     return res.send(res.item);
   } catch (err) {
-    res.status(400).json({ err });
+    return res.status(400).json({ err });
   }
 };
 

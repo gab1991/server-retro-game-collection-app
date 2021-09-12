@@ -55,6 +55,7 @@ const signIn = async (req, res) => {
   if (error) {
     const { message } = error.details[0];
     const divided = divideStr(message);
+
     return res.status(400).send({
       err_message: divided[1],
       field: divided[0],

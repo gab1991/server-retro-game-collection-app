@@ -3,10 +3,11 @@ const { findByKeywords, findSingleItem, getShippingCost } = require('../controll
 
 const router = express.Router();
 
+// Endpoints
 router.get('/searchList/:platform/:gameName/:sortOrder', findByKeywords);
 
-router.get('/singleItem/:id', findSingleItem);
+router.get('/:id', findSingleItem);
 
-router.get('/shopingCosts/:id', getShippingCost);
+router.get('/:id/shopingCosts', getShippingCost);
 
 module.exports = router;
