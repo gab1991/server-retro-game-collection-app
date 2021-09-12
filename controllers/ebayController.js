@@ -1,5 +1,3 @@
-require('dotenv').config();
-const querystring = require('querystring');
 const superagent = require('superagent');
 
 const apiKey = process.env.EBAY_API_KEY;
@@ -100,7 +98,7 @@ const getShippingCost = async (req, res) => {
     DestinationPostalCode: postalCode || '',
   };
 
-  const query = querystring.encode(queryParams);
+  const query = new URLSearchParams(queryParams).toString();
   const url = `${ebayGetItemUrl}?${query}`;
 
   try {

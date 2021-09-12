@@ -1,6 +1,6 @@
 const { RAWG_API_KEY } = process.env;
 const { RAWG_API_URL } = process.env;
-const querystring = require('query-string');
+
 const superagent = require('superagent');
 
 const getGameDetails = async (req, res) => {
@@ -42,7 +42,7 @@ const getGameScreenshots = async (req, res) => {
 };
 
 const getGamesForPlatforms = async (req, res) => {
-  const strQuery = querystring.stringify(req.query);
+  const strQuery = new URLSearchParams(req.query).toString();
 
   const url = `${RAWG_API_URL}?${strQuery}&key=${RAWG_API_KEY}`;
 
