@@ -5,7 +5,6 @@ const router = express.Router();
 
 const {
   getProfile,
-  updateProfile,
   getIsWatchedEbayCard,
   addEbayCard,
   removeEbayCard,
@@ -13,7 +12,8 @@ const {
   toggleEbaySection,
   addGame,
   removeGame,
-} = require('../controllers/profileController');
+  reorderGames,
+} = require('../controllers/profileController/profileController');
 
 router.get('/', getProfile);
 
@@ -21,7 +21,7 @@ router.post('/games', fetchVerifiedProfile, addGame);
 
 router.delete('/games', fetchVerifiedProfile, removeGame);
 
-router.post('/update', updateProfile);
+router.put('/games/reorder', fetchVerifiedProfile, reorderGames);
 
 router.post('/isWatchedEbayCard', getIsWatchedEbayCard);
 

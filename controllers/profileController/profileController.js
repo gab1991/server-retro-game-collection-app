@@ -1,54 +1,11 @@
-const Profile = require('../models/Profile.js');
+const Profile = require('../../models/Profile.js');
+const { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform } = require('./helpers');
 
-// HELPERS
+const reorderGames = async (req, res) => {
+  const { platform, newSortedGames, list } = req.body;
+  const { profile } = req;
 
-function getPlatform(platformName, platformList) {
-  let foundPlatfrom;
-  let updInd;
-  for (let i = 0; i < platformList.length; i++) {
-    if (platformName === platformList[i].name) {
-      foundPlatfrom = platformList[i];
-      updInd = i;
-      break;
-    }
-  }
-
-  return {
-    foundPlatfrom,
-    updInd,
-  };
-}
-
-function addNewPlatfrom(platformObj, platformsList) {
-  platformsList.push(platformObj);
-  const lastIdx = platformsList.length - 1;
-  return platformsList[lastIdx];
-}
-
-function isGameInList(gameName, gameList) {
-  for (let i = 0; i < gameList.length; i++) {
-    if (gameName === gameList[i].name) {
-      return {
-        result: true,
-        index: i,
-      };
-    }
-  }
-  return {
-    result: false,
-    index: null,
-  };
-}
-
-function getGameForUpd(gameName, gameList) {
-  const { index } = isGameInList(gameName, gameList);
-  if (index == null) return null;
-  return gameList[index];
-}
-
-async function reorderGames(profile, req, res) {
   try {
-    const { platform, newSortedGames, list } = req.body;
     const userPlatforms = profile[list].platforms;
     const { foundPlatfrom } = getPlatform(platform, userPlatforms);
 
@@ -67,7 +24,9 @@ async function reorderGames(profile, req, res) {
     }
 
     foundPlatfrom.games = [...newSortedGames];
+
     await profile.save();
+
     return res.send({
       success: 'reordering done',
     });
@@ -76,7 +35,7 @@ async function reorderGames(profile, req, res) {
       message: err,
     });
   }
-}
+};
 
 function findEbayCardById(ebayItemId, ebayItemList) {
   for (let i = 0; i < ebayItemList.length; i++) {
@@ -187,34 +146,6 @@ const removeGame = async (req, res) => {
   } catch (err) {
     return res.status(500).send({
       message: err,
-    });
-  }
-};
-
-const updateProfile = async (req, res) => {
-  const verifiedId = req.verifiedUserId;
-  const { action } = req.body;
-
-  try {
-    const profile = await Profile.findOne({
-      _id: verifiedId,
-    });
-
-    if (!profile.length) {
-      return res.status(400).send({
-        err_message: 'No such user',
-      });
-    }
-
-    switch (action) {
-      case 'reorder':
-        return reorderGames(profile, req, res);
-      default:
-        return null;
-    }
-  } catch (err) {
-    return res.status(500).json({
-      message: err.message,
     });
   }
 };
@@ -499,7 +430,6 @@ const toggleEbaySection = async (req, res) => {
 
 module.exports = {
   getProfile,
-  updateProfile,
   getIsWatchedEbayCard,
   addEbayCard,
   removeEbayCard,
@@ -507,4 +437,5 @@ module.exports = {
   toggleEbaySection,
   addGame,
   removeGame,
+  reorderGames,
 };
