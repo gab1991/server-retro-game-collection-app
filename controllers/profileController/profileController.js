@@ -1,4 +1,3 @@
-const Profile = require('../../models/Profile.js');
 const { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform, findEbayCardById } = require('./helpers');
 
 const reorderGames = async (req, res) => {
@@ -312,21 +311,11 @@ const getGameWatchedCards = async (req, res) => {
 };
 
 const toggleEbaySection = async (req, res) => {
-  const verifiedId = req.verifiedUserId;
   const { game, platform, isShowed } = req.body;
-  try {
-    const profile = await Profile.findOne({
-      _id: verifiedId,
-    });
+  const { profile } = req;
 
-    if (profile.length === 0) {
-      return res.status(400).send({
-        err_message: 'no such user',
-      });
-    }
-    // check which list to update
-    const userList = 'wish_list';
-    const userPlatforms = profile[userList].platforms;
+  try {
+    const userPlatforms = profile.wish_list.platforms;
 
     let searchPlatform;
     for (let i = 0; i < userPlatforms.length; i++) {
@@ -352,7 +341,9 @@ const toggleEbaySection = async (req, res) => {
     }
     // changing the rule
     gameToSearch.isShowEbay = isShowed;
+
     await profile.save();
+
     res.success = `Ebay section has been ${isShowed === true ? 'showed' : 'hidden'}`;
     return res.json({
       success: res.success,
