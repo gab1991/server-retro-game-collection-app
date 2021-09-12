@@ -67,7 +67,7 @@ const getProfile = async (req, res, next) => {
 };
 
 const addGame = async (req, res) => {
-  const { platform, game, list } = req.body;
+  const { platform, game, list, slug } = req.body;
   const { profile } = req;
 
   try {
@@ -97,6 +97,7 @@ const addGame = async (req, res) => {
     gamesForPlatform.push({
       name: game,
       date: Date.now(),
+      slug,
     });
 
     await profile.save();
@@ -151,22 +152,11 @@ const removeGame = async (req, res) => {
 };
 
 const getIsWatchedEbayCard = async (req, res) => {
-  const verifiedId = req.verifiedUserId;
-  const { ebayItemId, game, platform } = req.body;
+  const { profile } = req;
+  const { platform, gameName, ebayItemId } = req.params;
 
   try {
-    const profile = await Profile.findOne({
-      _id: verifiedId,
-    });
-
-    if (profile.length === 0) {
-      return res.status(400).send({
-        err_message: 'no such user',
-      });
-    }
-    // check which list to update
-    const userList = 'wish_list';
-    const userPlatforms = profile[userList].platforms;
+    const userPlatforms = profile.wish_list.platforms;
 
     const { foundPlatfrom: searchPlatform } = getPlatform(platform, userPlatforms);
     // if this platform is not in the userlist
@@ -178,7 +168,7 @@ const getIsWatchedEbayCard = async (req, res) => {
     const gamesForPlatform = searchPlatform.games;
 
     // check for existing games
-    const gameToSearch = getGameForUpd(game, gamesForPlatform);
+    const gameToSearch = getGameForUpd(gameName, gamesForPlatform);
     if (!gameToSearch) {
       return res.status(200).json({
         missed: 'not in the list',
