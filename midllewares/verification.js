@@ -14,8 +14,8 @@ const verification = (req, res, next) => {
   }
 
   try {
-    const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-    req.verifiedUserData = verified;
+    const { _id } = jwt.verify(token, process.env.TOKEN_SECRET);
+    req.verifiedUserId = _id;
     return next();
   } catch (err) {
     return res.status(400).json({ access_denied: 'Access Denied' });

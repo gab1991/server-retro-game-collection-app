@@ -88,7 +88,7 @@ const checkCredentials = async (req, res) => {
     const { username } = req.body;
 
     // token verification
-    const { _id } = req.verifiedUserData;
+    const _id = req.verifiedUserId;
 
     // check if this user exists
     const user = await Profile.findOne({ _id });

@@ -3,7 +3,7 @@ const Profile = require('../models/Profile.js');
 // HELPERS
 
 const fetchVerifiedProfile = async (req, res, next) => {
-  const verifiedId = req.verifiedUserData._id;
+  const verifiedId = req.verifiedUserId;
 
   const profile = await Profile.findOne({
     _id: verifiedId,
@@ -139,7 +139,7 @@ function findEbayCardById(ebayItemId, ebayItemList) {
 }
 
 const getProfile = async (req, res, next) => {
-  const verifiedId = req.verifiedUserData._id;
+  const verifiedId = req.verifiedUserId;
 
   try {
     const profile = await Profile.findOne({
@@ -205,7 +205,7 @@ const addGame = async (req, res) => {
 };
 
 const updateProfile = async (req, res) => {
-  const verifiedId = req.verifiedUserData._id;
+  const verifiedId = req.verifiedUserId;
   const { action } = req.body;
 
   try {
@@ -235,7 +235,7 @@ const updateProfile = async (req, res) => {
 };
 
 const getIsWatchedEbayCard = async (req, res) => {
-  const verifiedId = req.verifiedUserData._id;
+  const verifiedId = req.verifiedUserId;
   const { ebayItemId, game, platform } = req.body;
 
   try {
@@ -290,7 +290,7 @@ const getIsWatchedEbayCard = async (req, res) => {
 const addEbayCard = async (req, res) => {
   const { ebayItemId, game, platform } = req.body.ebayCard;
 
-  const verifiedId = req.verifiedUserData._id;
+  const verifiedId = req.verifiedUserId;
 
   try {
     const profile = await Profile.findOne({
@@ -355,7 +355,7 @@ const addEbayCard = async (req, res) => {
 
 const removeEbayCard = async (req, res) => {
   const { ebayItemId, game, platform } = req.body;
-  const verifiedId = req.verifiedUserData._id;
+  const verifiedId = req.verifiedUserId;
 
   try {
     const profile = await Profile.findOne({
@@ -415,7 +415,7 @@ const removeEbayCard = async (req, res) => {
 
 const getGameWatchedCards = async (req, res) => {
   const { gameName, platform } = req.params;
-  const verifiedId = req.verifiedUserData._id;
+  const verifiedId = req.verifiedUserId;
 
   try {
     const profile = await Profile.findOne({
@@ -460,7 +460,7 @@ const getGameWatchedCards = async (req, res) => {
 };
 
 const toggleEbaySection = async (req, res) => {
-  const verifiedId = req.verifiedUserData._id;
+  const verifiedId = req.verifiedUserId;
   const { game, platform, isShowed } = req.body;
   try {
     const profile = await Profile.findOne({
