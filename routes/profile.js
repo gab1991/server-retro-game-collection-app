@@ -23,9 +23,9 @@ router.delete('/games', fetchVerifiedProfile, removeGame);
 
 router.put('/games/reorder', fetchVerifiedProfile, reorderGames);
 
-router.get('/ebayCards/isWatched/:platform/:gameName/:ebayItemId', fetchVerifiedProfile, getIsWatchedEbayCard);
+router.post('/ebayCards', fetchVerifiedProfile, addEbayCard);
 
-router.post('/addEbayCard', addEbayCard);
+router.get('/ebayCards/isWatched/:platform/:gameName/:ebayItemId', fetchVerifiedProfile, getIsWatchedEbayCard);
 
 router.post('/removeEbayCard', removeEbayCard);
 

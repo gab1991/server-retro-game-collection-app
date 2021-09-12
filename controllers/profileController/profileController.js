@@ -195,22 +195,10 @@ const getIsWatchedEbayCard = async (req, res) => {
 
 const addEbayCard = async (req, res) => {
   const { ebayItemId, game, platform } = req.body.ebayCard;
-
-  const verifiedId = req.verifiedUserId;
+  const { profile } = req;
 
   try {
-    const profile = await Profile.findOne({
-      _id: verifiedId,
-    });
-
-    if (profile.length === 0) {
-      return res.status(400).send({
-        err_message: 'no such user',
-      });
-    }
-    // check which list to update
-    const userList = 'wish_list';
-    const userPlatforms = profile[userList].platforms;
+    const userPlatforms = profile.wish_list.platforms;
     let { foundPlatfrom } = getPlatform(platform, userPlatforms);
 
     // if this platform is not in the userlist
