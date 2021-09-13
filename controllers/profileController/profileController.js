@@ -1,40 +1,30 @@
 const { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform, findEbayCardById } = require('./helpers');
+const asyncErrorCatcher = require('../../utils/asyncErrorCatcher');
+const AppError = require('../../utils/AppError');
 
-const reorderGames = async (req, res) => {
+const reorderGames = asyncErrorCatcher(async (req, res, next) => {
   const { platform, newSortedGames, list } = req.body;
   const { profile } = req;
 
-  try {
-    const userPlatforms = profile[list].platforms;
-    const { foundPlatfrom } = getPlatform(platform, userPlatforms);
+  const userPlatforms = profile[list].platforms;
+  const { foundPlatfrom } = getPlatform(platform, userPlatforms);
 
-    // if this platform is not in the userlist
-    if (!foundPlatfrom) {
-      return res.status(400).send({
-        err_message: "Couldn't find this platfrom in user's platforms",
-      });
-    }
-
-    // check for equal counts
-    if (foundPlatfrom.games.length !== newSortedGames.length) {
-      return res.status(400).send({
-        err_message: `Wrong number of games! In db ${foundPlatfrom.games.length} `,
-      });
-    }
-
-    foundPlatfrom.games = [...newSortedGames];
-
-    await profile.save();
-
-    return res.send({
-      success: 'reordering done',
-    });
-  } catch (err) {
-    return res.status(500).send({
-      message: err,
-    });
+  if (!foundPlatfrom) {
+    return next(new AppError("Couldn't find this platfrom in user's platforms", 404));
   }
-};
+
+  if (foundPlatfrom.games.length !== newSortedGames.length) {
+    return next(new AppError(`Wrong number of games! In db ${foundPlatfrom.games.length} `, 400));
+  }
+
+  foundPlatfrom.games = [...newSortedGames];
+
+  await profile.save();
+
+  return res.send({
+    success: 'reordering done',
+  });
+});
 
 const getProfile = async (req, res) => {
   const { profile } = req;

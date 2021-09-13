@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const ebayOffersSchema = new mongoose.Schema({
   id: { type: String },
@@ -28,12 +29,13 @@ const profileSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    max: 1024,
-    min: 4,
+    maxLength: 1024,
+    minlength: 4,
   },
   email: {
     type: String,
     required: true,
+    validate: [validator.isEmail, 'Your email is not valid'],
   },
   createdDate: {
     type: Date,
