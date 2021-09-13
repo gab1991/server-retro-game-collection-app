@@ -22,7 +22,8 @@
     "jsonwebtoken": "^8.5.1",
     "minisearch": "^3.1.0",
     "mongoose": "^6.0.3",
-    "superagent": "^6.1.0"
+    "superagent": "^6.1.0",
+    "validator": "^13.6.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
