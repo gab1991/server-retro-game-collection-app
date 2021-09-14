@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const AppError = require('./utils/AppError');
 const { errorHandling } = require('./midllewares');
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -35,6 +36,9 @@ app.use(express.static('assets_minified_for_prod'));
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
 });
+
+// 404 handling
+app.all('*', (req, res, next) => next(new AppError('required resource is not found', 404)));
 
 // Error handling
 app.use(errorHandling);
