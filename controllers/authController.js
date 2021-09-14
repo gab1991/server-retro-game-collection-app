@@ -1,22 +1,9 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { signUpValidation, signInValidation, divideStr } = require('../validation.js');
 const Profile = require('../models/Profile.js');
+const asyncErrorCatcher = require('../utils/asyncErrorCatcher');
 
-const signUp = async (req, res) => {
-  const { error } = signUpValidation(req.body);
-
-  if (error) {
-    const { message } = error.details[0];
-    const divided = divideStr(message);
-
-    return res.status(400).send({
-      err_message: divided[1],
-      field: divided[0],
-    });
-  }
-
-  // check if this user already exists
+const signUp = asyncErrorCatcher(async (req, res) => {
   const existingUser = await Profile.findOne({ $or: [{ username: req.body.username }, { email: req.body.email }] });
 
   if (existingUser) {
@@ -41,26 +28,11 @@ const signUp = async (req, res) => {
     wish_list: { platforms: [] },
   });
 
-  try {
-    await profile.save();
-    return res.send({ user_id: profile._id });
-  } catch (err) {
-    return res.status(400).send(err);
-  }
-};
+  await profile.save();
+  return res.send({ user_id: profile._id });
+});
 
-const signIn = async (req, res) => {
-  const { error } = signInValidation(req.body);
-
-  if (error) {
-    const { message } = error.details[0];
-    const divided = divideStr(message);
-
-    return res.status(400).send({
-      err_message: divided[1],
-      field: divided[0],
-    });
-  }
+const signIn = asyncErrorCatcher(async (req, res) => {
   // check if this user exists
   const user = await Profile.findOne({ username: req.body.username });
 
@@ -82,7 +54,7 @@ const signIn = async (req, res) => {
   const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
 
   return res.send({ success: 'Log In', username: req.body.username, token });
-};
+});
 
 const checkCredentials = async (req, res) => {
   try {

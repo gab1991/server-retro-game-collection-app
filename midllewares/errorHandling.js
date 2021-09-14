@@ -1,9 +1,10 @@
 const isProduction = process.env.NODE_ENV === 'production';
 
 const errorHandling = (error, req, res, next) => {
-  console.error('caught in errorHandling', error);
+  console.error('ERROR', error.stack);
+
   const modifiedErr = error;
-  modifiedErr.statusCode = error.StatusCode || 500;
+  modifiedErr.statusCode = error.statusCode || 500;
   modifiedErr.status = error.status || 'error';
 
   if (isProduction) {
@@ -19,7 +20,6 @@ const errorHandling = (error, req, res, next) => {
       stack: error.stack,
     });
   }
-
   next();
 };
 

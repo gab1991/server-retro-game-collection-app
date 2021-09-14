@@ -25,6 +25,7 @@ const profileSchema = new mongoose.Schema({
     required: true,
     unique: true,
     dropDups: true,
+    minlength: 1,
   },
   password: {
     type: String,
