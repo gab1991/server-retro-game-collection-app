@@ -29,12 +29,16 @@ const signUp = asyncErrorCatcher(async (req, res) => {
   });
 
   await profile.save();
-  return res.send({ user_id: profile._id });
+
+  // Creating validation token
+  const token = jwt.sign({ _id: profile._id }, process.env.TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRE });
+
+  return res.send({ success: 'Sign up', username: req.body.username, token });
 });
 
 const signIn = asyncErrorCatcher(async (req, res) => {
   // check if this user exists
-  const user = await Profile.findOne({ username: req.body.username });
+  const user = await Profile.findOne({ username: req.body.username }).select('password');
 
   if (!user) {
     return res.status(400).send({ err_message: "Username doesn't exist ", field: 'username' });
@@ -59,15 +63,9 @@ const signIn = asyncErrorCatcher(async (req, res) => {
 const checkCredentials = async (req, res) => {
   try {
     const { username } = req.body;
+    const { profile } = req;
 
-    // token verification
-    const _id = req.verifiedUserId;
-
-    // check if this user exists
-    const user = await Profile.findOne({ _id });
-    const { username: dbUsername } = user;
-
-    if (dbUsername === username) {
+    if (profile.username === username) {
       return res.send({ success: 'credentials are valid' });
     }
     return res.status(400).send({ err_message: 'local username is different than one in db' });

@@ -32,6 +32,7 @@ const profileSchema = new mongoose.Schema({
     required: true,
     maxLength: 1024,
     minlength: 4,
+    select: false,
   },
   email: {
     type: String,
