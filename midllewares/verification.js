@@ -1,16 +1,10 @@
 const jwt = require('jsonwebtoken');
 
 const verification = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    return res.status(401).json({ access_denied: 'token is not provieded' });
-  }
-
-  const token = authHeader.split(' ')[1];
+  const token = req.cookies.authorization;
 
   if (!token) {
-    return res.status(401).json({ access_denied: 'No token provided' });
+    return res.status(401).json({ access_denied: 'token is not provieded' });
   }
 
   try {

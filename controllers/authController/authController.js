@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const Profile = require('../models/Profile.js');
-const asyncErrorCatcher = require('../utils/asyncErrorCatcher');
+const Profile = require('../../models/Profile.js');
+const { issueToken } = require('./issueTokken');
+const asyncErrorCatcher = require('../../utils/asyncErrorCatcher');
 
 const signUp = asyncErrorCatcher(async (req, res) => {
   const existingUser = await Profile.findOne({ $or: [{ username: req.body.username }, { email: req.body.email }] });
@@ -30,10 +30,9 @@ const signUp = asyncErrorCatcher(async (req, res) => {
 
   await profile.save();
 
-  // Creating validation token
-  const token = jwt.sign({ _id: profile._id }, process.env.TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRE });
+  issueToken(profile._id, res);
 
-  return res.send({ success: 'Sign up', username: req.body.username, token });
+  return res.send({ status: 'success' });
 });
 
 const signIn = asyncErrorCatcher(async (req, res) => {
@@ -54,21 +53,15 @@ const signIn = asyncErrorCatcher(async (req, res) => {
     });
   }
 
-  // Creating validation token
-  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
+  issueToken(user._id, res);
 
-  return res.send({ success: 'Log In', username: req.body.username, token });
+  return res.send({ status: 'success', username: req.body.username });
 });
 
 const checkCredentials = async (req, res) => {
   try {
-    const { username } = req.body;
     const { profile } = req;
-
-    if (profile.username === username) {
-      return res.send({ success: 'credentials are valid' });
-    }
-    return res.status(400).send({ err_message: 'local username is different than one in db' });
+    return res.send({ status: 'success', username: profile.username });
   } catch (err) {
     return res.status(400).send({ err_message: err });
   }

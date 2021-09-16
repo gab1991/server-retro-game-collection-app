@@ -1,16 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const AppError = require('./utils/AppError');
 const { errorHandling } = require('./midllewares');
 
 const isDevelopment = process.env.NODE_ENV === 'development';
+const origin = isDevelopment ? 'http://localhost:3000' : '/';
 
 const app = express();
 
 // Middlewares
 app.use(express.json()); // allows server to accept json
-isDevelopment && app.use(cors()); // allows cors requests
+app.use(cookieParser());
+isDevelopment && app.use(cors({ credentials: true, origin })); // allows cors requests with cookies
 
 // Router
 const authRouter = require('./routes/auth.js');
