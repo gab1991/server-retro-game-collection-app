@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const AppError = require('./utils/AppError');
 const { errorHandling } = require('./midllewares');
+const { youtubeRoutes, rawgRoutes, profileRoutes, ebayRoutes, boxArtsRoutes, authRoutes } = require('./routes');
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 const origin = isDevelopment ? 'http://localhost:3000' : '/';
@@ -16,19 +17,12 @@ app.use(cookieParser());
 isDevelopment && app.use(cors({ credentials: true, origin })); // allows cors requests with cookies
 
 // Router
-const authRouter = require('./routes/auth.js');
-const boxArtRouter = require('./routes/boxArts.js');
-const profileRouter = require('./routes/profile.js');
-const youtubeRouter = require('./routes/youtube.js');
-const ebayRouter = require('./routes/ebay.js');
-const RAWGRouter = require('./routes/rawg.js');
-
-app.use('/api/auth', authRouter);
-app.use('/api/box_arts', boxArtRouter);
-app.use('/api/profile', profileRouter);
-app.use('/api/youtube', youtubeRouter);
-app.use('/api/ebay', ebayRouter);
-app.use('/api/rawg', RAWGRouter);
+app.use('/api/auth', authRoutes);
+app.use('/api/box_arts', boxArtsRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/youtube', youtubeRoutes);
+app.use('/api/ebay', ebayRoutes);
+app.use('/api/rawg', rawgRoutes);
 
 // Static
 app.use(express.static('build'));
