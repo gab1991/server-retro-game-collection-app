@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const Profile = require('../../models/Profile.js');
 const { issueToken } = require('./issueTokken');
+const { revokeToken } = require('./revokeToken');
 const asyncErrorCatcher = require('../../utils/asyncErrorCatcher');
 
 const signUp = asyncErrorCatcher(async (req, res) => {
@@ -67,8 +68,18 @@ const checkCredentials = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  try {
+    revokeToken(res);
+    return res.send({ status: 'success' });
+  } catch (err) {
+    return res.status(400).send({ err_message: err });
+  }
+};
+
 module.exports = {
   signUp,
   signIn,
+  logout,
   checkCredentials,
 };
