@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const rateLimiter = require('express-rate-limit');
 const AppError = require('./utils/AppError');
 const { errorHandling } = require('./midllewares');
 const { youtubeRoutes, rawgRoutes, profileRoutes, ebayRoutes, boxArtsRoutes, authRoutes } = require('./routes');
@@ -11,7 +12,14 @@ const origin = isDevelopment ? 'http://localhost:3000' : '/';
 
 const app = express();
 
+const apiLimiter = rateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  message: 'Your limit is out. Try again in 15 minutes',
+});
+
 // Middlewares
+app.use('/api/', apiLimiter);
 app.use(express.json()); // allows server to accept json
 app.use(cookieParser());
 isDevelopment && app.use(cors({ credentials: true, origin })); // allows cors requests with cookies
@@ -26,7 +34,6 @@ app.use('/api/rawg', rawgRoutes);
 
 // Static
 app.use(express.static('build'));
-
 app.use(express.static('assets_minified_for_prod'));
 
 // Basic html sending
