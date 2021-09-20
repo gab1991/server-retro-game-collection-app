@@ -18,6 +18,7 @@
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "express-mongo-sanitize": "^2.1.0",
     "express-rate-limit": "^5.3.0",
     "googleapis": "^85.0.0",
     "helmet": "^4.6.0",
@@ -25,7 +26,8 @@
     "minisearch": "^3.1.0",
     "mongoose": "^6.0.3",
     "superagent": "^6.1.0",
-    "validator": "^13.6.0"
+    "validator": "^13.6.0",
+    "xss-clean": "^0.1.1"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",

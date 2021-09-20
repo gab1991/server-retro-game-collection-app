@@ -4,6 +4,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const rateLimiter = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitizer = require('express-mongo-sanitize');
+const xssClean = require('xss-clean');
 const AppError = require('./utils/AppError');
 const { errorHandling } = require('./midllewares');
 const { youtubeRoutes, rawgRoutes, profileRoutes, ebayRoutes, boxArtsRoutes, authRoutes } = require('./routes');
@@ -20,8 +22,13 @@ const apiLimiter = rateLimiter({
 });
 
 // Middlewares
+
+// Security
 app.use('/api/', apiLimiter);
 app.use(helmet());
+app.use(mongoSanitizer());
+app.use(xssClean());
+
 app.use(express.json()); // allows server to accept json
 app.use(cookieParser());
 isDevelopment && app.use(cors({ credentials: true, origin })); // allows cors requests with cookies
