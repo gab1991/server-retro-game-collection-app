@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const rateLimiter = require('express-rate-limit');
 const helmet = require('helmet');
+const hpp = require('hpp');
 const mongoSanitizer = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
 const AppError = require('./utils/AppError');
@@ -26,8 +27,9 @@ const apiLimiter = rateLimiter({
 // Security
 app.use('/api/', apiLimiter);
 app.use(helmet());
-app.use(mongoSanitizer());
-app.use(xssClean());
+app.use(mongoSanitizer()); // noSQL injection protection
+app.use(xssClean()); // xss injection protection
+app.use(hpp()); // prevents http parameter pollution
 
 app.use(express.json()); // allows server to accept json
 app.use(cookieParser());
