@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const rateLimiter = require('express-rate-limit');
 const helmet = require('helmet');
@@ -22,8 +23,7 @@ const apiLimiter = rateLimiter({
   message: 'Your limit is out. Try again in 15 minutes',
 });
 
-// Middlewares
-
+/** Middlewares */
 // Security
 app.use('/api/', apiLimiter);
 app.use(helmet());
@@ -31,9 +31,11 @@ app.use(mongoSanitizer()); // noSQL injection protection
 app.use(xssClean()); // xss injection protection
 app.use(hpp()); // prevents http parameter pollution
 
+// General
 app.use(express.json()); // allows server to accept json
 app.use(cookieParser());
 isDevelopment && app.use(cors({ credentials: true, origin })); // allows cors requests with cookies
+app.use(compression()); // compresses responses
 
 // Router
 app.use('/api/auth', authRoutes);
