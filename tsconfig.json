@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "target": "es6",
+    "rootDir": "./",
+    "strict": true,
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "checkJs": false,
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {}
+  }
+}
