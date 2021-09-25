@@ -1,12 +1,15 @@
 import './env';
+import './globals';
 import mongoose from 'mongoose';
 import { app } from './app';
 
-const isProduction = process.env.NODE_ENV === 'production';
+const db_url = global.__IS_PROD__ ? process.env.DATABASE_CLOUD_URL : process.env.DATABASE_URL;
 
-const db_url = isProduction ? process.env.DATABASE_CLOUD_URL : process.env.DATABASE_URL;
+if (!db_url) {
+  new Error('database url has not been provided');
+}
 
-mongoose.connect(db_url || '/', {});
+mongoose.connect(`${db_url}`, {});
 
 const db = mongoose.connection;
 db.on('error', (err) => console.error(err));
