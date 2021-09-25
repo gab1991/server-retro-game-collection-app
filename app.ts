@@ -12,10 +12,12 @@ const AppError = require('./utils/AppError');
 const { errorHandling } = require('./midllewares');
 const { youtubeRoutes, rawgRoutes, profileRoutes, ebayRoutes, boxArtsRoutes, authRoutes } = require('./routes');
 
+const fs = require('fs');
+
 const isDevelopment = process.env.NODE_ENV === 'development';
 const origin = isDevelopment ? 'http://localhost:3000' : '/';
 
-const app = express();
+export const app = express();
 
 const apiLimiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -59,5 +61,3 @@ app.all('*', (req, res, next) => next(new AppError('required resource is not fou
 
 // Error handling
 app.use(errorHandling);
-
-module.exports = app;
