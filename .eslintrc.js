@@ -2,6 +2,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 12,
+    project: 'tsconfig.json',
   },
   env: {
     node: true,
@@ -10,12 +11,14 @@ module.exports = {
   },
   plugins: ['@typescript-eslint'],
   extends: [
-    'airbnb-base',
     'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'airbnb-base',
     'plugin:node/recommended',
     'plugin:security/recommended',
   ],
   rules: {
+    'no-console': ['error', { allow: ['warn', 'error', 'info'] }],
     'no-unused-expressions': ['error', { allowShortCircuit: true, allowTernary: true }],
     'object-curly-newline': 'off',
     'comma-dangle': 'off',
@@ -35,11 +38,23 @@ module.exports = {
   },
   overrides: [
     /** Typesctipr overrides */
+
     // Declarations only
     {
       files: ['*.d.ts'],
       rules: {
         'no-var': 'off',
+      },
+    },
+    // Common ts files
+    {
+      files: ['*.ts'],
+      rules: {
+        'node/no-unsupported-features/es-syntax': 'off',
+        'import/no-unresolved': 'off',
+        'import/extensions': ['error', { js: 'never', ts: 'never' }],
+        'node/no-missing-import': 'off',
+        'node/file-extension-in-import': ['error', 'always', { '.js': 'never', '.ts': 'never' }],
       },
     },
   ],
