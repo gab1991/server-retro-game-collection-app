@@ -18,6 +18,7 @@ module.exports = {
     'plugin:security/recommended',
   ],
   rules: {
+    'import/prefer-default-export': 'off',
     'no-console': ['error', { allow: ['warn', 'error', 'info'] }],
     'no-unused-expressions': ['error', { allowShortCircuit: true, allowTernary: true }],
     'object-curly-newline': 'off',

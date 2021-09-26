@@ -1,18 +1,16 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const compression = require('compression');
-const cookieParser = require('cookie-parser');
-const rateLimiter = require('express-rate-limit');
-const helmet = require('helmet');
-const hpp = require('hpp');
-const mongoSanitizer = require('express-mongo-sanitize');
-const xssClean = require('xss-clean');
-const AppError = require('./utils/AppError');
-const { errorHandling } = require('./midllewares');
-const { youtubeRoutes, rawgRoutes, profileRoutes, ebayRoutes, boxArtsRoutes, authRoutes } = require('./routes');
-
-const fs = require('fs');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import rateLimiter from 'express-rate-limit';
+import helmet from 'helmet';
+import hpp from 'hpp';
+import mongoSanitizer from 'express-mongo-sanitize';
+import xssClean from 'xss-clean';
+import AppError from './utils/AppError';
+import { errorHandling } from './midllewares';
+import { youtubeRoutes, rawgRoutes, profileRoutes, ebayRoutes, boxArtsRoutes, authRoutes } from './routes';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 const origin = isDevelopment ? 'http://localhost:3000' : '/';

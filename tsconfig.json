@@ -6,13 +6,13 @@
     "incremental": true,
     "target": "es6",
     "rootDir": "./",
-    "strict": true,
-    "noImplicitAny": false,
+    "strict": true, // turn on --strictNullChecks, --noImplicitAny, --noImplicitThis, --alwaysStrict, --strictFunctionTypes, --strictPropertyInitialization  --strictBindCallApply
     "moduleResolution": "node",
     "checkJs": false,
     "sourceMap": true,
     "outDir": "dist",
     "baseUrl": ".",
-    "paths": {}
+    "paths": {},
+    "noImplicitAny": false
   }
 }
