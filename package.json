@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "cross-env NODE_ENV=development nodemon server.ts",
-    "production": "cross-env NODE_ENV=production nodemon server.ts"
+    "production": "cross-env NODE_ENV=production nodemon server.ts",
+    "lint": "eslint **/*.js **/*.ts"
   },
   "engines": {
     "node": ">=14.15.1"
@@ -34,6 +35,8 @@
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/node": "^16.10.1",
+    "@typescript-eslint/eslint-plugin": "^4.31.2",
+    "@typescript-eslint/parser": "^4.31.2",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "14.2.1",

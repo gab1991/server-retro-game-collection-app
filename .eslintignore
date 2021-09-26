@@ -1,0 +1,9 @@
+# Ignore built files 
+build/*
+dist/*
+
+#Igonre node modules 
+node_modules/*
+
+#linter config 
+.eslintrc.js

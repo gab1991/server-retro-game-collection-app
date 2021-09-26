@@ -1,13 +1,20 @@
 module.exports = {
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 12,
+  },
   env: {
     node: true,
     commonjs: true,
     es2021: true,
   },
-  extends: ['airbnb-base', 'plugin:node/recommended', 'plugin:security/recommended'],
-  parserOptions: {
-    ecmaVersion: 12,
-  },
+  plugins: ['@typescript-eslint'],
+  extends: [
+    'airbnb-base',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:node/recommended',
+    'plugin:security/recommended',
+  ],
   rules: {
     'no-unused-expressions': ['error', { allowShortCircuit: true, allowTernary: true }],
     'object-curly-newline': 'off',
@@ -26,5 +33,14 @@ module.exports = {
     'node/prefer-promises/dns': 'error',
     'node/prefer-promises/fs': 'error',
   },
-  ignorePatterns: ['.eslintrc.js'],
+  overrides: [
+    /** Typesctipr overrides */
+    // Declarations only
+    {
+      files: ['*.d.ts'],
+      rules: {
+        'no-var': 'off',
+      },
+    },
+  ],
 };
