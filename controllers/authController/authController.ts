@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import Profile from '../../models/Profile';
 import { issueToken } from './issueTokken';
 import { revokeToken } from './revokeToken';
-import asyncErrorCatcher from '../../utils/asyncErrorCatcher';
+import { asyncErrorCatcher } from '../../utils/asyncErrorCatcher';
 
 export const signUp = asyncErrorCatcher(async (req, res) => {
   const existingUser = await Profile.findOne({ $or: [{ username: req.body.username }, { email: req.body.email }] });

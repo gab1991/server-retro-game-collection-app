@@ -1,5 +1,5 @@
 const { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform, findEbayCardById } = require('./helpers');
-const asyncErrorCatcher = require('../../utils/asyncErrorCatcher');
+const { asyncErrorCatcher } = require('../../utils/asyncErrorCatcher');
 const AppError = require('../../utils/AppError');
 
 const reorderGames = asyncErrorCatcher(async (req, res, next) => {
