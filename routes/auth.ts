@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { verification, fetchVerifiedProfile } from '../midllewares';
+import { signUp, signIn, checkCredentials, logout } from '../controllers/authController/authController';
 
 const router = express.Router();
-const { verification, fetchVerifiedProfile } = require('../midllewares');
-const { signUp, signIn, checkCredentials, logout } = require('../controllers/authController/authController');
 
 // Endpoints
 router.post('/sign_up', signUp);

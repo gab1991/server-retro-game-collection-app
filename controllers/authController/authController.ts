@@ -1,10 +1,10 @@
-const bcrypt = require('bcrypt');
-const Profile = require('../../models/Profile.js');
-const { issueToken } = require('./issueTokken');
-const { revokeToken } = require('./revokeToken');
-const asyncErrorCatcher = require('../../utils/asyncErrorCatcher');
+import bcrypt from 'bcrypt';
+import Profile from '../../models/Profile';
+import { issueToken } from './issueTokken';
+import { revokeToken } from './revokeToken';
+import asyncErrorCatcher from '../../utils/asyncErrorCatcher';
 
-const signUp = asyncErrorCatcher(async (req, res) => {
+export const signUp = asyncErrorCatcher(async (req, res) => {
   const existingUser = await Profile.findOne({ $or: [{ username: req.body.username }, { email: req.body.email }] });
 
   if (existingUser) {
@@ -36,7 +36,7 @@ const signUp = asyncErrorCatcher(async (req, res) => {
   return res.send({ status: 'success' });
 });
 
-const signIn = asyncErrorCatcher(async (req, res) => {
+export const signIn = asyncErrorCatcher(async (req, res) => {
   // check if this user exists
   const user = await Profile.findOne({ username: req.body.username }).select('password');
 
@@ -59,7 +59,7 @@ const signIn = asyncErrorCatcher(async (req, res) => {
   return res.send({ status: 'success', username: req.body.username });
 });
 
-const checkCredentials = async (req, res) => {
+export const checkCredentials = async (req, res) => {
   try {
     const { profile } = req;
     return res.send({ status: 'success', username: profile.username });
@@ -68,18 +68,11 @@ const checkCredentials = async (req, res) => {
   }
 };
 
-const logout = async (req, res) => {
+export const logout = async (req, res) => {
   try {
     revokeToken(res);
     return res.send({ status: 'success' });
   } catch (err) {
     return res.status(400).send({ err_message: err });
   }
-};
-
-module.exports = {
-  signUp,
-  signIn,
-  logout,
-  checkCredentials,
 };
