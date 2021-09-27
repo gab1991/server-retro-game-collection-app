@@ -1,29 +1,35 @@
 import bcrypt from 'bcrypt';
+
 import Profile from '../../models/Profile';
 import { issueToken } from './issueTokken';
 import { revokeToken } from './revokeToken';
 import { asyncErrorCatcher } from '../../utils/asyncErrorCatcher';
 
 export const signUp = asyncErrorCatcher(async (req, res) => {
-  const existingUser = await Profile.findOne({ $or: [{ username: req.body.username }, { email: req.body.email }] });
+  const { email, password, username } = req.body;
+
+  const existingUser = await Profile.findOne({ $or: [{ username }, { email }] });
 
   if (existingUser) {
-    if (existingUser.username === req.body.username) {
-      return res.status(400).send({ err_message: 'This username is already taken', field: 'username' });
+    if (existingUser.username === username) {
+      res.status(400).send({ err_message: 'This username is already taken', field: 'username' });
+      return;
     }
-    if (existingUser.email === req.body.email) {
-      return res.status(400).send({ err_message: 'This email is already taken', field: 'email' });
+    if (existingUser.email === email) {
+      res.status(400).send({ err_message: 'This email is already taken', field: 'email' });
+      return;
     }
-    return res.status(400).send({ err_message: 'This user already exists', field: 'unknown' });
+    res.status(400).send({ err_message: 'This user already exists', field: 'unknown' });
+    return;
   }
 
   // Hash passwords
   const salt = await bcrypt.genSalt(10);
-  const hashPassword = await bcrypt.hash(req.body.password, salt);
+  const hashPassword = await bcrypt.hash(password, salt);
 
   const profile = new Profile({
-    username: req.body.username,
-    email: req.body.email,
+    username,
+    email,
     password: hashPassword,
     owned_list: { platforms: [] },
     wish_list: { platforms: [] },
@@ -33,7 +39,7 @@ export const signUp = asyncErrorCatcher(async (req, res) => {
 
   issueToken(profile._id, res);
 
-  return res.send({ status: 'success' });
+  res.send({ status: 'success' });
 });
 
 export const signIn = asyncErrorCatcher(async (req, res) => {
@@ -41,22 +47,24 @@ export const signIn = asyncErrorCatcher(async (req, res) => {
   const user = await Profile.findOne({ username: req.body.username }).select('password');
 
   if (!user) {
-    return res.status(400).send({ err_message: "Username doesn't exist ", field: 'username' });
+    res.status(400).send({ err_message: "Username doesn't exist ", field: 'username' });
+    return;
   }
 
   // Password is correct
   const validPass = await bcrypt.compare(req.body.password, user.password);
 
   if (!validPass) {
-    return res.status(400).send({
+    res.status(400).send({
       err_message: 'Username or password is not correct',
       field: 'password',
     });
+    return;
   }
 
   issueToken(user._id, res);
 
-  return res.send({ status: 'success', username: req.body.username });
+  res.send({ status: 'success', username: req.body.username });
 });
 
 export const checkCredentials = async (req, res) => {
