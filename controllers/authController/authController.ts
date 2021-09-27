@@ -4,22 +4,23 @@ import Profile from '../../models/Profile';
 import { issueToken } from './issueTokken';
 import { revokeToken } from './revokeToken';
 import { asyncErrorCatcher } from '../../utils/asyncErrorCatcher';
+import { TSignUpHandler } from './types';
 
-export const signUp = asyncErrorCatcher(async (req, res) => {
+const handl: TSignUpHandler = async (req, res) => {
   const { email, password, username } = req.body;
 
   const existingUser = await Profile.findOne({ $or: [{ username }, { email }] });
 
   if (existingUser) {
     if (existingUser.username === username) {
-      res.status(400).send({ err_message: 'This username is already taken', field: 'username' });
+      res.status(400).send({ err_message: 'This username is already taken', field: 'username', status: 'fail' });
       return;
     }
     if (existingUser.email === email) {
-      res.status(400).send({ err_message: 'This email is already taken', field: 'email' });
+      res.status(400).send({ err_message: 'This email is already taken', field: 'email', status: 'fail' });
       return;
     }
-    res.status(400).send({ err_message: 'This user already exists', field: 'unknown' });
+    res.status(400).send({ err_message: 'This user already exists', field: 'unknown', status: 'fail' });
     return;
   }
 
@@ -40,7 +41,9 @@ export const signUp = asyncErrorCatcher(async (req, res) => {
   issueToken(profile._id, res);
 
   res.send({ status: 'success' });
-});
+};
+
+export const signUp = asyncErrorCatcher(handl);
 
 export const signIn = asyncErrorCatcher(async (req, res) => {
   // check if this user exists
