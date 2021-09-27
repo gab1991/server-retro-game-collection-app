@@ -16,6 +16,8 @@ module.exports = {
     'airbnb-base',
     'plugin:node/recommended',
     'plugin:security/recommended',
+    'prettier',
+    'plugin:prettier/recommended',
   ],
   rules: {
     'import/prefer-default-export': 'off',
@@ -51,6 +53,7 @@ module.exports = {
     {
       files: ['*.ts'],
       rules: {
+        'no-unused-vars': 'off',
         'node/no-unsupported-features/es-syntax': 'off',
         'import/no-unresolved': 'off',
         'import/extensions': ['error', { js: 'never', ts: 'never' }],
