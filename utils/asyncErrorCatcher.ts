@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { TAsyncMiddleWare } from 'typings/middlewares';
 
 export const asyncErrorCatcher =
-  (fn: TAsyncMiddleWare) =>
+  <T extends TAsyncMiddleWare>(fn: T) =>
   (req: Request, res: Response, next: NextFunction): void => {
     fn(req, res, next).catch(next);
   };
