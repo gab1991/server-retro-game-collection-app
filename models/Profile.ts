@@ -1,25 +1,26 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
+import { IEbayOffer, IGame, IPlatform, IProfile } from './types';
 
-const ebayOffersSchema = new mongoose.Schema({
+const ebayOffersSchema = new mongoose.Schema<IEbayOffer>({
   id: { type: String },
-  date: { type: Date, default: Date.now },
+  date: { type: Date, default: new Date() },
 });
 
-const gameSchema = new mongoose.Schema({
+const gameSchema = new mongoose.Schema<IGame>({
   slug: { type: String, requred: true },
   name: { type: String, requred: true },
-  date: { type: Date, default: Date.now },
+  date: { type: Date, default: new Date() },
   isShowEbay: { type: Boolean, default: true },
   watchedEbayOffers: [ebayOffersSchema],
 });
 
-const platfromSchema = new mongoose.Schema({
-  name: { type: String, defaultL: undefined },
+const platfromSchema = new mongoose.Schema<IPlatform>({
+  name: { type: String, requred: true },
   games: [gameSchema],
 });
 
-const profileSchema = new mongoose.Schema({
+const profileSchema = new mongoose.Schema<IProfile>({
   username: {
     type: String,
     required: true,
@@ -42,7 +43,7 @@ const profileSchema = new mongoose.Schema({
   createdDate: {
     type: Date,
     required: true,
-    default: Date.now,
+    default: new Date(),
   },
   owned_list: {
     platforms: [platfromSchema],
@@ -52,6 +53,4 @@ const profileSchema = new mongoose.Schema({
   },
 });
 
-const Profile = mongoose.model('Profile', profileSchema);
-
-module.exports = Profile;
+export const Profile = mongoose.model('Profile', profileSchema);

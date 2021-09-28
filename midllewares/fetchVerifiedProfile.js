@@ -1,4 +1,4 @@
-const Profile = require('../models/Profile.js');
+const Profile = require('../models/Profile');
 
 const fetchVerifiedProfile = async (req, res, next) => {
   const verifiedId = req.verifiedUserId;

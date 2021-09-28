@@ -53,6 +53,7 @@ module.exports = {
     {
       files: ['*.ts'],
       rules: {
+        'no-shadow': 'off',
         'no-unused-vars': 'off',
         'node/no-unsupported-features/es-syntax': 'off',
         'import/no-unresolved': 'off',
