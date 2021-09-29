@@ -2,6 +2,24 @@ import jwt from 'jsonwebtoken';
 import { TMiddleWare } from 'typings/middlewares';
 import { IReqWithVerifiedId } from 'typings/requests';
 import { IAppRes } from 'typings/responses';
+import { isString } from 'typings/typeguards';
+
+const { TOKEN_SECRET } = process.env;
+
+interface IJWTpayload {
+  [key: string]: string;
+  _id: string;
+}
+
+const isJWTpayload = (payload: any): payload is IJWTpayload => {
+  if (isString(payload)) {
+    return false;
+  }
+  if ('_id' in payload) {
+    return true;
+  }
+  return false;
+};
 
 export const verification: TMiddleWare<IReqWithVerifiedId, IAppRes> = (req, res, next) => {
   const token = req.cookies.authorization;
@@ -10,10 +28,18 @@ export const verification: TMiddleWare<IReqWithVerifiedId, IAppRes> = (req, res,
     return res.status(401).json({ err_message: 'token is not provieded', status: 'fail' });
   }
 
-  try {
-    const { _id } = jwt.verify(token, process.env.TOKEN_SECRET);
+  if (!TOKEN_SECRET) {
+    return res.status(401).json({ err_message: 'token secret is failed', status: 'fail' });
+  }
 
-    req.verifiedUserId = _id;
+  try {
+    const jwtPaylod = jwt.verify(token, TOKEN_SECRET);
+
+    if (!isJWTpayload(jwtPaylod)) {
+      return res.status(401).json({ err_message: 'token is not correct', status: 'fail' });
+    }
+
+    req.verifiedUserId = jwtPaylod._id;
     return next();
   } catch (err) {
     return res.status(400).json({ err_message: 'Access Denied', status: 'fail' });
