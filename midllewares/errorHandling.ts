@@ -1,6 +1,9 @@
+import { TErrorHandlingMiddleWare } from 'typings/middlewares';
+import { AppError } from 'utils/AppError';
+
 const isProduction = process.env.NODE_ENV === 'production';
 
-const errorHandling = (error, req, res, next) => {
+export const errorHandling: TErrorHandlingMiddleWare<AppError> = (error, req, res, next) => {
   console.error('ERROR', error.stack);
 
   const modifiedErr = error;
@@ -22,5 +25,3 @@ const errorHandling = (error, req, res, next) => {
   }
   next();
 };
-
-module.exports = { errorHandling };

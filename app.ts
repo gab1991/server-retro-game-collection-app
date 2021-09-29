@@ -8,9 +8,9 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import mongoSanitizer from 'express-mongo-sanitize';
 import xssClean from 'xss-clean';
-import AppError from './utils/AppError';
-import { errorHandling } from './midllewares';
-import { youtubeRoutes, rawgRoutes, profileRoutes, ebayRoutes, boxArtsRoutes, authRoutes } from './routes';
+import { AppError } from 'utils/AppError';
+import { errorHandling } from 'midllewares';
+import { youtubeRoutes, rawgRoutes, profileRoutes, ebayRoutes, boxArtsRoutes, authRoutes } from 'routes';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 const origin = isDevelopment ? 'http://localhost:3000' : '/';
