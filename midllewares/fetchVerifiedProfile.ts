@@ -1,10 +1,11 @@
 import { Profile } from 'models/Profile';
 import { IProfile } from 'models/types';
 import { TAsyncMiddleWare } from 'typings/middlewares';
-import { IReqWithProfile } from 'typings/requests';
+import { IReqWithCookies } from 'typings/requests';
+import { IResWithProfile, IResWithVerifiedId } from 'typings/responses';
 
-const fetchVerifiedProfile: TAsyncMiddleWare<IReqWithProfile> = async (req, res, next) => {
-  const verifiedId = req.verifiedUserId;
+export const fetchVerifiedProfile: TAsyncMiddleWare<IReqWithCookies, IResWithProfile> = async (req, res, next) => {
+  const verifiedId = res.locals.verifiedUserId;
 
   const profile: IProfile = await Profile.findOne({
     _id: verifiedId,
@@ -13,11 +14,11 @@ const fetchVerifiedProfile: TAsyncMiddleWare<IReqWithProfile> = async (req, res,
   if (!profile) {
     return res.status(400).send({
       err_message: 'No such user',
+      status: 'fail',
     });
   }
 
-  req.profile = profile;
+  res.locals.profile = profile;
+
   return next();
 };
-
-module.exports = { fetchVerifiedProfile };

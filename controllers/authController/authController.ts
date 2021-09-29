@@ -1,27 +1,24 @@
 import bcrypt from 'bcrypt';
 
-import Profile from '../../models/Profile';
+import { Profile } from '../../models/Profile';
 import { issueToken } from './issueTokken';
 import { revokeToken } from './revokeToken';
 import { asyncErrorCatcher } from '../../utils/asyncErrorCatcher';
-import { TSignUpHandler } from './types';
+import { TSignInHandler, TSignUpHandler } from './types';
 
-const handl: TSignUpHandler = async (req, res) => {
+export const signUp = asyncErrorCatcher<TSignUpHandler>(async (req, res) => {
   const { email, password, username } = req.body;
 
   const existingUser = await Profile.findOne({ $or: [{ username }, { email }] });
 
   if (existingUser) {
     if (existingUser.username === username) {
-      res.status(400).send({ err_message: 'This username is already taken', field: 'username', status: 'fail' });
-      return;
+      return res.status(400).send({ err_message: 'This username is already taken', field: 'username', status: 'fail' });
     }
     if (existingUser.email === email) {
-      res.status(400).send({ err_message: 'This email is already taken', field: 'email', status: 'fail' });
-      return;
+      return res.status(400).send({ err_message: 'This email is already taken', field: 'email', status: 'fail' });
     }
-    res.status(400).send({ err_message: 'This user already exists', field: 'unknown', status: 'fail' });
-    return;
+    return res.status(400).send({ err_message: 'This user already exists', field: 'unknown', status: 'fail' });
   }
 
   // Hash passwords
@@ -40,34 +37,32 @@ const handl: TSignUpHandler = async (req, res) => {
 
   issueToken(profile._id, res);
 
-  res.send({ status: 'success' });
-};
+  return res.send({ status: 'success' });
+});
 
-export const signUp = asyncErrorCatcher(handl);
+export const signIn = asyncErrorCatcher<TSignInHandler>(async (req, res) => {
+  const { password, username } = req.body;
 
-export const signIn = asyncErrorCatcher(async (req, res) => {
-  // check if this user exists
-  const user = await Profile.findOne({ username: req.body.username }).select('password');
+  const existingUser = await Profile.findOne({ username }).select('password');
 
-  if (!user) {
-    res.status(400).send({ err_message: "Username doesn't exist ", field: 'username' });
-    return;
+  if (!existingUser) {
+    return res.status(400).send({ err_message: "Username doesn't exist ", field: 'username', status: 'fail' });
   }
 
-  // Password is correct
-  const validPass = await bcrypt.compare(req.body.password, user.password);
+  // pass validation
+  const validPass = await bcrypt.compare(password, existingUser.password);
 
   if (!validPass) {
-    res.status(400).send({
+    return res.status(400).send({
       err_message: 'Username or password is not correct',
       field: 'password',
+      status: 'fail',
     });
-    return;
   }
 
-  issueToken(user._id, res);
+  issueToken(existingUser._id, res);
 
-  res.send({ status: 'success', username: req.body.username });
+  return res.send({ status: 'success' });
 });
 
 export const checkCredentials = async (req, res) => {

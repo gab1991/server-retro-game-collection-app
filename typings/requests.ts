@@ -1,5 +1,4 @@
-import { Request } from 'express';
-import { IProfile } from 'models/types';
+import { Request, Response } from 'express';
 
 export interface ICredentialBody {
   username: string;
@@ -13,12 +12,4 @@ export interface IReqWithCookies extends Request {
   cookies: {
     authorization: string;
   };
-}
-
-export interface IReqWithVerifiedId extends IReqWithCookies {
-  verifiedUserId: string;
-}
-
-export interface IReqWithProfile extends IReqWithVerifiedId {
-  profile: IProfile;
 }

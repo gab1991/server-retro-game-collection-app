@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { TMiddleWare } from 'typings/middlewares';
-import { IReqWithVerifiedId } from 'typings/requests';
-import { IAppRes } from 'typings/responses';
+import { IReqWithCookies } from 'typings/requests';
+import { IResWithVerifiedId } from 'typings/responses';
 import { isString } from 'typings/typeguards';
 
 const { TOKEN_SECRET } = process.env;
@@ -21,7 +21,7 @@ const isJWTpayload = (payload: any): payload is IJWTpayload => {
   return false;
 };
 
-export const verification: TMiddleWare<IReqWithVerifiedId, IAppRes> = (req, res, next) => {
+export const verification: TMiddleWare<IReqWithCookies, IResWithVerifiedId> = (req, res, next) => {
   const token = req.cookies.authorization;
 
   if (!token) {
@@ -39,7 +39,8 @@ export const verification: TMiddleWare<IReqWithVerifiedId, IAppRes> = (req, res,
       return res.status(401).json({ err_message: 'token is not correct', status: 'fail' });
     }
 
-    req.verifiedUserId = jwtPaylod._id;
+    res.locals.verifiedUserId = jwtPaylod._id;
+
     return next();
   } catch (err) {
     return res.status(400).json({ err_message: 'Access Denied', status: 'fail' });

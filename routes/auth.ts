@@ -1,5 +1,5 @@
 import express from 'express';
-import { verification, fetchVerifiedProfile } from '../midllewares';
+import { verification, fetchVerifiedProfile } from 'midllewares';
 import { signUp, signIn, checkCredentials, logout } from '../controllers/authController/authController';
 
 const router = express.Router();
