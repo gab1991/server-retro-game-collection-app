@@ -14,5 +14,8 @@
     "baseUrl": ".",
     "paths": {},
     "noImplicitAny": false
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
   }
 }
