@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
 
-import { Profile } from '../../models/Profile';
+import { Profile } from 'models/Profile';
 import { issueToken } from './issueTokken';
 import { revokeToken } from './revokeToken';
 import { asyncErrorCatcher } from '../../utils/asyncErrorCatcher';
-import { TSignInHandler, TSignUpHandler } from './types';
+import { TCheckCredHandler, TLogoutHandler, TSignInHandler, TSignUpHandler } from './types';
 
 export const signUp = asyncErrorCatcher<TSignUpHandler>(async (req, res) => {
   const { email, password, username } = req.body;
@@ -65,20 +65,14 @@ export const signIn = asyncErrorCatcher<TSignInHandler>(async (req, res) => {
   return res.send({ status: 'success' });
 });
 
-export const checkCredentials = async (req, res) => {
-  try {
-    const { profile } = req;
-    return res.send({ status: 'success', username: profile.username });
-  } catch (err) {
-    return res.status(400).send({ err_message: err });
-  }
-};
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+export const checkCredentials = asyncErrorCatcher<TCheckCredHandler>(async (req, res) => {
+  const { profile } = res.locals;
+  return res.send({ status: 'success', username: profile.username });
+});
 
-export const logout = async (req, res) => {
-  try {
-    revokeToken(res);
-    return res.send({ status: 'success' });
-  } catch (err) {
-    return res.status(400).send({ err_message: err });
-  }
-};
+export const logout = asyncErrorCatcher<TLogoutHandler>(async (req, res) => {
+  revokeToken(res);
+  return res.send({ status: 'success' });
+});

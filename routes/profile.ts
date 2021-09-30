@@ -1,9 +1,7 @@
-const express = require('express');
-const { fetchVerifiedProfile, verification } = require('../midllewares');
+import express from 'express';
+import { fetchVerifiedProfile, verification } from '../midllewares';
 
-const router = express.Router();
-
-const {
+import {
   getProfile,
   getIsWatchedEbayCard,
   addEbayCard,
@@ -13,7 +11,9 @@ const {
   addGame,
   removeGame,
   reorderGames,
-} = require('../controllers/profileController/profileController');
+} from '../controllers/profileController/profileController';
+
+const router = express.Router();
 
 // Route specific middlewares
 router.use(verification, fetchVerifiedProfile);

@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { IProfile } from 'models/types';
 
+// BODIES
 export interface IAppResBody {
   err_message?: string;
   status: 'success' | 'fail';
@@ -10,15 +11,22 @@ export interface ISignUpResponse extends IAppResBody {
   field?: 'username' | 'email' | 'unknown' | 'password';
 }
 
-export type IAppRes<T extends IAppResBody, L extends Record<string, any>> = Response<T, L>;
+export interface ICheckCredResBody extends IAppResBody {
+  username: string;
+}
 
-interface ILocalsVerifiedID {
+// LOCALS
+export interface ILocalsVerifiedID {
   verifiedUserId: string;
 }
 
-interface ILocalsWithProfile extends ILocalsVerifiedID {
+export interface ILocalsWithProfile extends ILocalsVerifiedID {
   profile: IProfile;
 }
 
+// Responses
+export type IAppRes<T extends IAppResBody = IAppResBody, L extends Record<string, any> = any> = Response<T, L>;
+
 export type IResWithVerifiedId = IAppRes<IAppResBody, ILocalsVerifiedID>;
 export type IResWithProfile = IAppRes<IAppResBody, ILocalsWithProfile>;
+export type TResVerifiedUsername = IAppRes<ICheckCredResBody, ILocalsWithProfile>;

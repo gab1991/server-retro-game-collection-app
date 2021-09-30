@@ -4,7 +4,7 @@ import { IReqWithCookies } from 'typings/requests';
 import { IResWithVerifiedId } from 'typings/responses';
 import { isString } from 'typings/typeguards';
 
-const { TOKEN_SECRET } = process.env;
+export const { TOKEN_SECRET, TOKEN_EXPIRE = '7d', TOKEN_COOKIE_MAX_AGE = 604800000 } = process.env;
 
 interface IJWTpayload {
   [key: string]: string;

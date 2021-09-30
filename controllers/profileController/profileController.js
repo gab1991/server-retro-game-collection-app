@@ -27,7 +27,7 @@ const reorderGames = asyncErrorCatcher(async (req, res, next) => {
 });
 
 const getProfile = async (req, res) => {
-  const { profile } = req;
+  const { profile } = res.locals;
   return res.send(profile);
 };
 
