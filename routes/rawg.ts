@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 
-const { getGameDetails, getGameScreenshots, getGamesForPlatforms } = require('../controllers/ragwController');
+import { getGameDetails, getGameScreenshots, getGamesForPlatforms } from 'controllers/ragwController';
 
 const router = express.Router();
 
@@ -11,4 +11,4 @@ router.get('/screenshots/:slug', getGameScreenshots);
 
 router.get('/gamesForPlatform?:searchStr', getGamesForPlatforms);
 
-module.exports = router;
+export default router;

@@ -13,4 +13,4 @@ router.post('/sign_in', signIn);
 
 router.post('/check_credentials', verification, fetchVerifiedProfile, checkCredentials);
 
-module.exports = router;
+export default router;

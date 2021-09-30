@@ -1,5 +1,5 @@
-const express = require('express');
-const { findByKeywords, findSingleItem, getShippingCost } = require('../controllers/ebayController');
+import express from 'express';
+import { findByKeywords, findSingleItem, getShippingCost } from 'controllers/ebayController';
 
 const router = express.Router();
 
@@ -10,4 +10,4 @@ router.get('/:id', findSingleItem);
 
 router.get('/:id/shopingCosts', getShippingCost);
 
-module.exports = router;
+export default router;

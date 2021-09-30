@@ -1,6 +1,4 @@
 import express from 'express';
-import { fetchVerifiedProfile, verification } from '../midllewares';
-
 import {
   getProfile,
   getIsWatchedEbayCard,
@@ -11,7 +9,8 @@ import {
   addGame,
   removeGame,
   reorderGames,
-} from '../controllers/profileController/profileController';
+} from 'controllers/profileController/profileController';
+import { fetchVerifiedProfile, verification } from 'midllewares';
 
 const router = express.Router();
 
@@ -37,4 +36,4 @@ router.get('/ebayCards/isWatched/:platform/:gameName/:ebayItemId', getIsWatchedE
 
 router.post('/toggleEbaySection', toggleEbaySection);
 
-module.exports = router;
+export default router;
