@@ -2,9 +2,10 @@ import { Response } from 'express';
 import { IProfile } from 'models/types';
 
 // BODIES
-export interface IAppResBody {
+export interface IAppResBody<T = unknown> {
   err_message?: string;
   status: 'success' | 'fail';
+  data?: T;
 }
 
 export interface ISignUpResponse extends IAppResBody {

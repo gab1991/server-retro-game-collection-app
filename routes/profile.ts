@@ -9,7 +9,7 @@ import {
   addGame,
   removeGame,
   reorderGames,
-} from 'controllers/profileController/profileController';
+} from 'controllers/profileController';
 import { fetchVerifiedProfile, verification } from 'midllewares';
 
 const router = express.Router();
