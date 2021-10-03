@@ -1,6 +1,11 @@
-const getPlatform = (platformName, platformList) => {
-  let foundPlatfrom;
-  let updInd;
+import { IEbayOffer, IGame, IPlatform } from 'models/types';
+
+export const getPlatform = (
+  platformName: string,
+  platformList: IPlatform[]
+): { foundPlatfrom: IPlatform | null; updInd: number } => {
+  let foundPlatfrom: IPlatform | null = null;
+  let updInd = 1;
 
   for (let i = 0; i < platformList.length; i++) {
     if (platformName === platformList[i].name) {
@@ -16,13 +21,13 @@ const getPlatform = (platformName, platformList) => {
   };
 };
 
-const addNewPlatfrom = (platformObj, platformsList) => {
+export const addNewPlatfrom = (platformObj: IPlatform, platformsList: IPlatform[]): IPlatform => {
   platformsList.push(platformObj);
   const lastIdx = platformsList.length - 1;
   return platformsList[lastIdx];
 };
 
-const isGameInList = (gameName, gameList) => {
+export const isGameInList = (gameName: string, gameList: IGame[]): { result: boolean; index: null | number } => {
   for (let i = 0; i < gameList.length; i++) {
     if (gameName === gameList[i].name) {
       return {
@@ -37,13 +42,17 @@ const isGameInList = (gameName, gameList) => {
   };
 };
 
-const getGameForUpd = (gameName, gameList) => {
+export const getGameForUpd = (gameName: string, gameList: IGame[]): IGame | null => {
   const { index } = isGameInList(gameName, gameList);
-  if (index == null) return null;
+
+  if (index == null) {
+    return null;
+  }
+
   return gameList[index];
 };
 
-const findEbayCardById = (ebayItemId, ebayItemList) => {
+export const findEbayCardById = (ebayItemId: string, ebayItemList: IEbayOffer[]): number | null => {
   for (let i = 0; i < ebayItemList.length; i++) {
     if (ebayItemId === ebayItemList[i].id) {
       return i;
@@ -51,5 +60,3 @@ const findEbayCardById = (ebayItemId, ebayItemList) => {
   }
   return null;
 };
-
-module.exports = { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform, findEbayCardById };
