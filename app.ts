@@ -47,7 +47,13 @@ app.use('/api/rawg', rawgRoutes);
 
 // Static
 app.use(express.static('build'));
-app.use(express.static('assets_minified_for_prod'));
+app.use(
+  express.static('assets_minified_for_prod', {
+    setHeaders: (res) => {
+      res.set({ 'Cache-Control': 'public, max-age=604800' });
+    },
+  })
+);
 
 // Basic html sending
 app.get('*', (req, res) => {
