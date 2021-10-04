@@ -26,7 +26,10 @@ export interface ILocalsWithProfile extends ILocalsVerifiedID {
 }
 
 // Responses
-export type IAppRes<T extends IAppResBody = IAppResBody, L extends Record<string, any> = any> = Response<T, L>;
+export type IAppRes<
+  T extends IAppResBody = IAppResBody,
+  L extends Record<string, any> = Record<string, any>
+> = Response<T, L>;
 
 export type IResWithVerifiedId = IAppRes<IAppResBody, ILocalsVerifiedID>;
 export type IResWithProfile = IAppRes<IAppResBody, ILocalsWithProfile>;

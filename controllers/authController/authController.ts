@@ -65,8 +65,6 @@ export const signIn = asyncErrorCatcher<TSignInHandler>(async (req, res) => {
   return res.send({ status: 'success' });
 });
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 export const checkCredentials = asyncErrorCatcher<TCheckCredHandler>(async (req, res) => {
   const { profile } = res.locals;
   return res.send({ status: 'success', username: profile.username });

@@ -9,7 +9,7 @@ export type TMiddleWare<
 
 export type TAsyncMiddleWare<
   Req extends Request = Request,
-  Res extends Response = Response,
+  Res extends Response = any,
   Next extends NextFunction = NextFunction
 > = (req: Req, res: Res, next: Next) => Promise<void | Res>;
 
