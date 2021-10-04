@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { IAppRes } from './responses';
 
 export type TMiddleWare<
   Req extends Request = Request,

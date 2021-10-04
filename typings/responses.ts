@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import { IProfile } from 'models/types';
+import { Document } from 'mongoose';
 
 // BODIES
 export interface IAppResBody<T = unknown> {
@@ -22,7 +23,7 @@ export interface ILocalsVerifiedID {
 }
 
 export interface ILocalsWithProfile extends ILocalsVerifiedID {
-  profile: IProfile;
+  profile: Document<any, any, IProfile> & IProfile;
 }
 
 // Responses

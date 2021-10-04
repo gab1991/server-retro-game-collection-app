@@ -1,7 +1,7 @@
 import { asyncErrorCatcher } from 'utils/asyncErrorCatcher';
 import { AppError } from 'utils/AppError';
 import { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform, findEbayCardById } from './helpers';
-import { TGetProfileHandler } from './types';
+import { TAddProfileHandler, TGetProfileHandler } from './types';
 
 export const reorderGames = asyncErrorCatcher(async (req, res, next) => {
   const { platform, newSortedGames, list } = req.body;
@@ -32,7 +32,7 @@ export const getProfile: TGetProfileHandler = (req, res) => {
   return res.send({ status: 'success', data: profile });
 };
 
-export const addGame = asyncErrorCatcher(async (req, res) => {
+export const addGame = asyncErrorCatcher<TAddProfileHandler>(async (req, res) => {
   const { platform, game, list, slug } = req.body;
   const { profile } = res.locals;
 
@@ -56,20 +56,22 @@ export const addGame = asyncErrorCatcher(async (req, res) => {
   if (isInList) {
     return res.status(400).send({
       err_message: `${game} is already in your colletion`,
+      status: 'fail',
     });
   }
 
   gamesForPlatform.push({
     name: game,
-    // @ts-ignore
-    date: Date.now(),
+    date: new Date(),
     slug,
+    isShowEbay: false,
+    watchedEbayOffers: [],
   });
 
   await profile.save();
 
   return res.send({
-    success: `${game} has been added successfully`,
+    status: 'success',
   });
 });
 
