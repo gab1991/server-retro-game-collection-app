@@ -9,7 +9,7 @@ type IResGetProfile = IAppRes<IAppResBody<IProfile>, ILocalsWithProfile>;
 
 export type TGetProfileHandler = TMiddleWare<Request, IResGetProfile>;
 
-// Add Profile
+// Add Game
 interface TReqAddProfileBody {
   platform: AvailablePlatforms;
   game: string;
@@ -19,4 +19,27 @@ interface TReqAddProfileBody {
 
 type IResAddProfile = IAppRes<IAppResBody<IProfile>, ILocalsWithProfile>;
 type TReqAddProfile = Request<ParamsDictionary, IResAddProfile, TReqAddProfileBody>;
-export type TAddProfileHandler = TAsyncMiddleWare<TReqAddProfile, IResAddProfile>;
+export type TAddGameHandler = TAsyncMiddleWare<TReqAddProfile, IResAddProfile>;
+
+// Remove Game
+interface TReqDelProfileBody {
+  platform: AvailablePlatforms;
+  game: string;
+  list: AvailableLists;
+}
+
+type IResDelProsile = IResAddProfile;
+type TReqDelProfile = Request<ParamsDictionary, IResDelProsile, TReqDelProfileBody>;
+export type TRemoveGameHandler = TAsyncMiddleWare<TReqDelProfile, IResDelProsile>;
+
+// GetIsWatched
+interface IReqGetIsWatchedParams {
+  [key: string]: string;
+  platform: string;
+  gameName: string;
+  ebayItemId: string;
+}
+
+type IResGetIsWatched = IAppRes<IAppResBody<{ inList: boolean }>, ILocalsWithProfile>;
+type TReqGetIsWatched = Request<IReqGetIsWatchedParams | ParamsDictionary, IResGetIsWatched>;
+export type TGetIsWatcheEbayCardHanler = TAsyncMiddleWare<TReqGetIsWatched, IResGetIsWatched>;

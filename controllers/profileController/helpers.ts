@@ -1,7 +1,7 @@
-import { IEbayOffer, IGame, IPlatform } from 'models/types';
+import { AvailablePlatforms, IEbayOffer, IGame, IPlatform } from 'models/types';
 
 export const getPlatform = (
-  platformName: string,
+  platformName: AvailablePlatforms,
   platformList: IPlatform[]
 ): { foundPlatfrom: IPlatform | null; updInd: number } => {
   let foundPlatfrom: IPlatform | null = null;

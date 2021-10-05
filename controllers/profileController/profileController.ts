@@ -1,7 +1,8 @@
 import { asyncErrorCatcher } from 'utils/asyncErrorCatcher';
 import { AppError } from 'utils/AppError';
+import { isAvailablePlatform } from 'typings/typeguards/profile';
 import { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform, findEbayCardById } from './helpers';
-import { TAddProfileHandler, TGetProfileHandler } from './types';
+import { TAddGameHandler, TRemoveGameHandler, TGetIsWatcheEbayCardHanler, TGetProfileHandler } from './types';
 
 export const reorderGames = asyncErrorCatcher(async (req, res, next) => {
   const { platform, newSortedGames, list } = req.body;
@@ -32,7 +33,7 @@ export const getProfile: TGetProfileHandler = (req, res) => {
   return res.send({ status: 'success', data: profile });
 };
 
-export const addGame = asyncErrorCatcher<TAddProfileHandler>(async (req, res) => {
+export const addGame = asyncErrorCatcher<TAddGameHandler>(async (req, res) => {
   const { platform, game, list, slug } = req.body;
   const { profile } = res.locals;
 
@@ -77,56 +78,61 @@ export const addGame = asyncErrorCatcher<TAddProfileHandler>(async (req, res) =>
   });
 });
 
-export const removeGame = async (req, res) => {
+export const removeGame = asyncErrorCatcher<TRemoveGameHandler>(async (req, res) => {
   const { platform, game, list } = req.body;
-  const { profile } = req;
+  const { profile } = res.locals;
 
-  try {
-    const userPlatforms = profile[list].platforms;
-    const { foundPlatfrom, updInd } = getPlatform(platform, userPlatforms);
+  const userPlatforms = profile[list].platforms;
+  const { foundPlatfrom, updInd } = getPlatform(platform, userPlatforms);
 
-    // if this platform is not in the userlist
-    if (!foundPlatfrom) {
-      return res.status(400).send({
-        err_message: "Could'nt find this platfrom in user's platforms",
-      });
-    }
-
-    const gamesForPlatform = foundPlatfrom.games;
-    // check for existing games
-    const gameInd = isGameInList(game, gamesForPlatform).index;
-
-    if (gameInd !== null) {
-      gamesForPlatform.splice(gameInd, 1);
-    }
-
-    // Check wheter remove directory or not
-    if (gamesForPlatform.length === 0) {
-      userPlatforms.splice(updInd, 1);
-    }
-
-    await profile.save();
-    return res.send({
-      success: `${game} has been removed successfully`,
-    });
-  } catch (err) {
-    return res.status(500).send({
-      message: err,
+  // if this platform is not in the userlist
+  if (!foundPlatfrom) {
+    return res.status(400).send({
+      err_message: "Could'nt find this platfrom in user's platforms",
+      status: 'fail',
     });
   }
-};
 
-export const getIsWatchedEbayCard = asyncErrorCatcher(async (req, res) => {
-  const { profile } = res.locals;
+  const gamesForPlatform = foundPlatfrom.games;
+  // check for existing games
+  const gameInd = isGameInList(game, gamesForPlatform).index;
+
+  if (gameInd !== null) {
+    gamesForPlatform.splice(gameInd, 1);
+  }
+
+  // Check wheter remove directory or not
+  if (!gamesForPlatform.length) {
+    userPlatforms.splice(updInd, 1);
+  }
+
+  await profile.save();
+
+  return res.send({
+    status: 'success',
+  });
+});
+
+export const getIsWatchedEbayCard = asyncErrorCatcher<TGetIsWatcheEbayCardHanler>(async (req, res) => {
   const { platform, gameName, ebayItemId } = req.params;
+  const { profile } = res.locals;
+
+  console.log(isAvailablePlatform(platform));
+  if (!platform || !gameName || !ebayItemId || !isAvailablePlatform(platform)) {
+    return res.status(400).send({
+      status: 'fail',
+      err_message: 'some of the params has not been provided',
+    });
+  }
 
   const userPlatforms = profile.wish_list.platforms;
 
   const { foundPlatfrom: searchPlatform } = getPlatform(platform, userPlatforms);
   // if this platform is not in the userlist
   if (!searchPlatform) {
-    return res.status(200).json({
-      missed: 'not in the list',
+    return res.json({
+      status: 'success',
+      data: { inList: false },
     });
   }
   const gamesForPlatform = searchPlatform.games;
@@ -134,21 +140,26 @@ export const getIsWatchedEbayCard = asyncErrorCatcher(async (req, res) => {
   // check for existing games
   const gameToSearch = getGameForUpd(gameName, gamesForPlatform);
   if (!gameToSearch) {
-    return res.status(200).json({
-      missed: 'not in the list',
+    return res.json({
+      status: 'success',
+      data: { inList: false },
     });
   }
 
   // check for existind ebayId
   const ebayOffers = gameToSearch.watchedEbayOffers;
   const isExist = findEbayCardById(ebayItemId, ebayOffers);
+
   if (isExist !== null) {
-    return res.status(200).json({
-      success: 'in the list',
+    return res.json({
+      status: 'success',
+      data: { inList: true },
     });
   }
-  return res.status(200).json({
-    missed: 'not in the list',
+
+  return res.json({
+    status: 'success',
+    data: { inList: false },
   });
 });
 
@@ -257,6 +268,7 @@ export const getGameWatchedCards = asyncErrorCatcher(async (req, res) => {
   const { profile } = res.locals;
   const userPlatforms = profile.wish_list.platforms;
 
+  // @ts-ignore
   const { foundPlatfrom } = getPlatform(platform, userPlatforms);
   // if this platform is not in the userlist
   if (!foundPlatfrom) {
