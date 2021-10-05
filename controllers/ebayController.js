@@ -1,6 +1,13 @@
 const superagent = require('superagent');
+const EbayAuthToken = require('ebay-oauth-nodejs-client');
 
-const apiKey = process.env.EBAY_API_KEY;
+const ebayAuthToken = new EbayAuthToken({
+  clientId: process.env.EBAY_CLIENT_ID,
+  clientSecret: process.env.EBAY_CLIENT_SECRET,
+  redirectUri: process.env.EBAY_REDIRECT_URL,
+});
+
+const apiKey = process.env.EBAY_CLIENT_ID;
 const ebayFindingServiceUrl = process.env.EBAY_FINDING_SERVICE_URL;
 const ebayGetItemUrl = process.env.EBAY_GET_ITEM_URL;
 
@@ -36,7 +43,7 @@ const findByKeywords = async (req, res) => {
   const url = `${ebayFindingServiceUrl}?${query}`;
 
   try {
-    const { text, status } = await superagent.get(url);
+    const { status, text } = await superagent.get(url);
     const data = JSON.parse(text);
 
     if (status !== 200) {
@@ -54,10 +61,11 @@ const findByKeywords = async (req, res) => {
 const findSingleItem = async (req, res) => {
   const { id } = req.params;
 
+  const token = await ebayAuthToken.getApplicationToken('PRODUCTION');
+
   const queryParams = {
     callname: 'GetSingleItem',
     responseencoding: 'JSON',
-    appid: apiKey,
     siteid: '0',
     version: '967',
     ItemID: id,
@@ -68,15 +76,14 @@ const findSingleItem = async (req, res) => {
   const url = `${ebayGetItemUrl}?${query}`;
 
   try {
-    const { status, text } = await superagent.get(url);
+    const { status, text } = await superagent.get(url).set('X-EBAY-API-IAF-TOKEN', token);
     const data = JSON.parse(text);
 
-    if (status !== 200) {
-      res.status(status).send({ err: "Couldn't fetch data from rawg" });
-    }
+    // if (data.Ack !== 'Success') {
+    //   res.status(status).send({ err: "Couldn't fetch data from rawg" });
+    // }
 
-    res.item = data;
-    return res.send(res.item);
+    return res.json(data);
   } catch (err) {
     return res.status(400).json({ err });
   }
@@ -101,8 +108,10 @@ const getShippingCost = async (req, res) => {
   const query = new URLSearchParams(queryParams).toString();
   const url = `${ebayGetItemUrl}?${query}`;
 
+  const token = await ebayAuthToken.getApplicationToken('PRODUCTION');
+
   try {
-    const { status, text } = await superagent.get(url);
+    const { status, text } = await superagent.get(url).set('X-EBAY-API-IAF-TOKEN', token);
     const data = JSON.parse(text);
 
     if (status !== 200) {
