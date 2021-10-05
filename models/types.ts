@@ -17,6 +17,11 @@ export enum AvailablePlatforms {
   'NES' = 'NES',
 }
 
+export enum AvailableLists {
+  WishList = 'wish_list',
+  OwnedList = 'owned_list',
+}
+
 export interface IPlatform {
   name: AvailablePlatforms;
   games: IGame[];
@@ -27,6 +32,6 @@ export interface IProfile {
   password: string;
   email: string;
   createdDate: Date;
-  owned_list: IPlatform[];
-  wish_list: IPlatform[];
+  [AvailableLists.OwnedList]: { platforms: IPlatform[] };
+  [AvailableLists.WishList]: { platforms: IPlatform[] };
 }

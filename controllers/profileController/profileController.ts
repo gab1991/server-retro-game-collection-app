@@ -37,6 +37,7 @@ export const addGame = asyncErrorCatcher<TAddProfileHandler>(async (req, res) =>
   const { profile } = res.locals;
 
   const userPlatforms = profile[list].platforms;
+
   let { foundPlatfrom } = getPlatform(platform, userPlatforms);
 
   // if this platform is not in the userlist
@@ -50,6 +51,7 @@ export const addGame = asyncErrorCatcher<TAddProfileHandler>(async (req, res) =>
     );
   }
   const gamesForPlatform = foundPlatfrom.games;
+
   // check for existing games
   const isInList = isGameInList(game, gamesForPlatform).result;
 

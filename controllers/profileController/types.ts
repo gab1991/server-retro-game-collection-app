@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { AvailablePlatforms, IProfile } from 'models/types';
+import { AvailableLists, AvailablePlatforms, IProfile } from 'models/types';
 import { TAsyncMiddleWare, TMiddleWare } from 'typings/middlewares';
 import { IAppRes, IAppResBody, ILocalsWithProfile } from 'typings/responses';
 
@@ -13,7 +13,7 @@ export type TGetProfileHandler = TMiddleWare<Request, IResGetProfile>;
 interface TReqAddProfileBody {
   platform: AvailablePlatforms;
   game: string;
-  list: string;
+  list: AvailableLists;
   slug: string;
 }
 
