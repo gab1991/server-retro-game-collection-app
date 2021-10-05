@@ -39,7 +39,7 @@ export const getProfile: TGetProfileHandler = (req, res) => {
   return res.send({ status: 'success', data: profile });
 };
 
-export const addGame = asyncErrorCatcher<TAddGameHandler>(async (req, res) => {
+export const addGame = asyncErrorCatcher<TAddGameHandler>(async (req, res, next) => {
   const { platform, game, list, slug } = req.body;
   const { profile } = res.locals;
 
@@ -63,10 +63,7 @@ export const addGame = asyncErrorCatcher<TAddGameHandler>(async (req, res) => {
   const isInList = isGameInList(game, gamesForPlatform).result;
 
   if (isInList) {
-    return res.status(400).send({
-      err_message: `${game} is already in your colletion`,
-      status: 'fail',
-    });
+    return next(new AppError(`${game} is already in your colletion`, 400));
   }
 
   gamesForPlatform.push({
@@ -84,7 +81,7 @@ export const addGame = asyncErrorCatcher<TAddGameHandler>(async (req, res) => {
   });
 });
 
-export const removeGame = asyncErrorCatcher<TRemoveGameHandler>(async (req, res) => {
+export const removeGame = asyncErrorCatcher<TRemoveGameHandler>(async (req, res, next) => {
   const { platform, game, list } = req.body;
   const { profile } = res.locals;
 
@@ -93,10 +90,7 @@ export const removeGame = asyncErrorCatcher<TRemoveGameHandler>(async (req, res)
 
   // if this platform is not in the userlist
   if (!foundPlatfrom) {
-    return res.status(400).send({
-      err_message: "Could'nt find this platfrom in user's platforms",
-      status: 'fail',
-    });
+    return next(new AppError(`Could'nt find this platfrom in user's platforms`, 400));
   }
 
   const gamesForPlatform = foundPlatfrom.games;
@@ -119,15 +113,12 @@ export const removeGame = asyncErrorCatcher<TRemoveGameHandler>(async (req, res)
   });
 });
 
-export const getIsWatchedEbayCard = asyncErrorCatcher<TGetIsWatcheEbayCardHanler>(async (req, res) => {
+export const getIsWatchedEbayCard = asyncErrorCatcher<TGetIsWatcheEbayCardHanler>(async (req, res, next) => {
   const { platform, gameName, ebayItemId } = req.params;
   const { profile } = res.locals;
 
   if (!platform || !gameName || !ebayItemId || !isAvailablePlatform(platform)) {
-    return res.status(400).send({
-      status: 'fail',
-      err_message: 'some of the params has not been provided',
-    });
+    return next(new AppError(`some of the params has not been provided`, 400));
   }
 
   const userPlatforms = profile.wish_list.platforms;
