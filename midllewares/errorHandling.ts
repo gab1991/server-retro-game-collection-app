@@ -13,14 +13,13 @@ export const errorHandling: TErrorHandlingMiddleWare<AppError> = (error, req, re
   if (isProduction) {
     res.status(modifiedErr.statusCode).json({
       status: modifiedErr.status,
-      message: modifiedErr.message,
+      err_message: modifiedErr.message,
     });
   } else {
     res.status(modifiedErr.statusCode).json({
       status: modifiedErr.status,
-      message: modifiedErr.message,
-      error: modifiedErr,
-      stack: error.stack,
+      err_message: modifiedErr.message,
+      errors: [{ error: modifiedErr, stack: error.stack }],
     });
   }
   next();

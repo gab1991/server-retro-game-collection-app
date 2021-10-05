@@ -1,11 +1,18 @@
 import { Response } from 'express';
 import { IProfile } from 'models/types';
 import { Document } from 'mongoose';
+import { AppError } from 'utils/AppError';
+
+interface IAppError {
+  error: AppError;
+  stack?: string;
+}
 
 // BODIES
 export interface IAppResBody<T = unknown> {
   err_message?: string;
-  status: 'success' | 'fail';
+  errors?: IAppError[];
+  status: 'success' | 'fail' | 'error';
   data?: T;
 }
 

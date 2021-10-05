@@ -2,9 +2,15 @@ import { asyncErrorCatcher } from 'utils/asyncErrorCatcher';
 import { AppError } from 'utils/AppError';
 import { isAvailablePlatform } from 'typings/typeguards/profile';
 import { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform, findEbayCardById } from './helpers';
-import { TAddGameHandler, TRemoveGameHandler, TGetIsWatcheEbayCardHanler, TGetProfileHandler } from './types';
+import {
+  TAddGameHandler,
+  TRemoveGameHandler,
+  TGetIsWatcheEbayCardHanler,
+  TGetProfileHandler,
+  TReorderGamesHandler,
+} from './types';
 
-export const reorderGames = asyncErrorCatcher(async (req, res, next) => {
+export const reorderGames = asyncErrorCatcher<TReorderGamesHandler>(async (req, res, next) => {
   const { platform, newSortedGames, list } = req.body;
   const { profile } = res.locals;
 
@@ -23,8 +29,8 @@ export const reorderGames = asyncErrorCatcher(async (req, res, next) => {
 
   await profile.save();
 
-  return res.send({
-    success: 'reordering done',
+  return res.json({
+    status: 'success',
   });
 });
 
@@ -117,7 +123,6 @@ export const getIsWatchedEbayCard = asyncErrorCatcher<TGetIsWatcheEbayCardHanler
   const { platform, gameName, ebayItemId } = req.params;
   const { profile } = res.locals;
 
-  console.log(isAvailablePlatform(platform));
   if (!platform || !gameName || !ebayItemId || !isAvailablePlatform(platform)) {
     return res.status(400).send({
       status: 'fail',

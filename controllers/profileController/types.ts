@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { AvailableLists, AvailablePlatforms, IProfile } from 'models/types';
+import { AvailableLists, AvailablePlatforms, IGame, IProfile } from 'models/types';
 import { TAsyncMiddleWare, TMiddleWare } from 'typings/middlewares';
 import { IAppRes, IAppResBody, ILocalsWithProfile } from 'typings/responses';
 
@@ -43,3 +43,14 @@ interface IReqGetIsWatchedParams {
 type IResGetIsWatched = IAppRes<IAppResBody<{ inList: boolean }>, ILocalsWithProfile>;
 type TReqGetIsWatched = Request<IReqGetIsWatchedParams | ParamsDictionary, IResGetIsWatched>;
 export type TGetIsWatcheEbayCardHanler = TAsyncMiddleWare<TReqGetIsWatched, IResGetIsWatched>;
+
+// ReorderGames
+interface TReqReorderGamesBody {
+  platform: AvailablePlatforms;
+  newSortedGames: IGame[];
+  list: AvailableLists;
+}
+
+type IResReorderGames = IAppRes<IAppResBody, ILocalsWithProfile>;
+type TReqReorderGames = Request<ParamsDictionary, IResReorderGames, TReqReorderGamesBody>;
+export type TReorderGamesHandler = TAsyncMiddleWare<TReqReorderGames, IResReorderGames>;
