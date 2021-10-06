@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { AvailableLists, AvailablePlatforms, IGame, IProfile } from 'models/types';
+import { AvailableLists, AvailablePlatforms, IEbayOffer, IGame, IProfile } from 'models/types';
 import { TAsyncMiddleWare, TMiddleWare } from 'typings/middlewares';
 import { IAppRes, IAppResBody, ILocalsWithProfile } from 'typings/responses';
 
@@ -66,8 +66,28 @@ type TReqWatchEbayCard = Request<ParamsDictionary, IResWatchEbayCard, IReqWatchE
 export type TWatchEbayCardHandler = TAsyncMiddleWare<TReqWatchEbayCard, IResWatchEbayCard>;
 
 // UnWatchEbayCard
-
 type IReqUnWatchEbayCardBody = IReqWatchEbayCardBody;
 type IResUnWatchEbayCard = IAppRes<IAppResBody, ILocalsWithProfile>;
 type TReqUnWatchEbayCard = Request<ParamsDictionary, IResUnWatchEbayCard, IReqUnWatchEbayCardBody>;
 export type TUnWatchEbayCardHandler = TAsyncMiddleWare<TReqUnWatchEbayCard, IResUnWatchEbayCard>;
+
+// GetWatchedCards
+interface IReqGetWatchedCardsParams {
+  [key: string]: string;
+  platform: string;
+  gameName: string;
+}
+
+type IResGetWatchedCards = IAppRes<IAppResBody<IEbayOffer[]>, ILocalsWithProfile>;
+type TReqGetWatchedCards = Request<IReqGetWatchedCardsParams | ParamsDictionary, IResGetWatchedCards>;
+export type TGetWatchedCardsHanler = TAsyncMiddleWare<TReqGetWatchedCards, IResGetWatchedCards>;
+
+// ToggleEbaySection
+interface IReqToggleEbaySectionBody {
+  isShowed: boolean;
+  game: string;
+  platform: AvailablePlatforms;
+}
+type IResToggleEbaySection = IAppRes<IAppResBody, ILocalsWithProfile>;
+type TReqToggleEbaySection = Request<ParamsDictionary, IResToggleEbaySection, IReqToggleEbaySectionBody>;
+export type TToggleEbaySectionHandler = TAsyncMiddleWare<TReqToggleEbaySection, IResToggleEbaySection>;

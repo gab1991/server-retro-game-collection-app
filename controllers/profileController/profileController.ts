@@ -10,6 +10,8 @@ import {
   TReorderGamesHandler,
   TWatchEbayCardHandler,
   TUnWatchEbayCardHandler,
+  TGetWatchedCardsHanler,
+  TToggleEbaySectionHandler,
 } from './types';
 
 export const reorderGames = asyncErrorCatcher<TReorderGamesHandler>(async (req, res, next) => {
@@ -161,7 +163,7 @@ export const getIsWatchedEbayCard = asyncErrorCatcher<TGetIsWatcheEbayCardHanler
   });
 });
 
-export const watchEbayCard = asyncErrorCatcher<TWatchEbayCardHandler>(async (req, res) => {
+export const watchEbayCard = asyncErrorCatcher<TWatchEbayCardHandler>(async (req, res, next) => {
   const { ebayItemId, game, platform } = req.body;
   const { profile } = res.locals;
 
@@ -185,7 +187,9 @@ export const watchEbayCard = asyncErrorCatcher<TWatchEbayCardHandler>(async (req
   const gameToChange = getGameForUpd(game, gamesForPlatform);
 
   if (!gameToChange) {
-    throw new AppError(`no game with the name ${game} has been found in your wishlist`, 400, { showModal: true });
+    return next(
+      new AppError(`no game with the name ${game} has been found in your wishlist`, 400, { showModal: true })
+    );
   }
 
   // check for existind ebayId
@@ -193,7 +197,7 @@ export const watchEbayCard = asyncErrorCatcher<TWatchEbayCardHandler>(async (req
   const ifExist = findEbayCardById(ebayItemId.toString(), ebayOffers);
 
   if (ifExist !== null) {
-    throw new AppError(`${ebayItemId} is already in your list`, 400);
+    return next(new AppError(`${ebayItemId} is already in your list`, 400));
   }
 
   gameToChange.watchedEbayOffers.unshift({
@@ -208,7 +212,7 @@ export const watchEbayCard = asyncErrorCatcher<TWatchEbayCardHandler>(async (req
   });
 });
 
-export const unWatchEbayCard = asyncErrorCatcher<TUnWatchEbayCardHandler>(async (req, res) => {
+export const unWatchEbayCard = asyncErrorCatcher<TUnWatchEbayCardHandler>(async (req, res, next) => {
   const { ebayItemId, game, platform } = req.body;
   const { profile } = res.locals;
 
@@ -218,7 +222,7 @@ export const unWatchEbayCard = asyncErrorCatcher<TUnWatchEbayCardHandler>(async 
 
   // if this platform is not in the userlist
   if (!foundPlatfrom) {
-    throw new AppError(`no platform with the name ${platform} has been found in your wishlist`, 400);
+    return next(new AppError(`no platform with the name ${platform} has been found in your wishlist`, 400));
   }
 
   const gamesForPlatform = foundPlatfrom.games;
@@ -226,7 +230,7 @@ export const unWatchEbayCard = asyncErrorCatcher<TUnWatchEbayCardHandler>(async 
   // check for existing games
   const gameToChange = getGameForUpd(game, gamesForPlatform);
   if (!gameToChange) {
-    throw new AppError(`no game with the name ${game} has been found in your wishlist`, 400);
+    return next(new AppError(`no game with the name ${game} has been found in your wishlist`, 400));
   }
 
   // check for existind ebayId
@@ -236,7 +240,7 @@ export const unWatchEbayCard = asyncErrorCatcher<TUnWatchEbayCardHandler>(async 
   if (ebayCardIndex !== null) {
     ebayOffers.splice(ebayCardIndex, 1);
   } else {
-    throw new AppError(`no ebayCard with id ${ebayCardIndex} found`, 400);
+    return next(new AppError(`no ebayCard with id ${ebayCardIndex} found`, 400));
   }
 
   await profile.save();
@@ -246,77 +250,64 @@ export const unWatchEbayCard = asyncErrorCatcher<TUnWatchEbayCardHandler>(async 
   });
 });
 
-export const getGameWatchedCards = asyncErrorCatcher(async (req, res) => {
+export const getGameWatchedCards = asyncErrorCatcher<TGetWatchedCardsHanler>(async (req, res, next) => {
   const { gameName, platform } = req.params;
 
   const { profile } = res.locals;
   const userPlatforms = profile.wish_list.platforms;
 
-  // @ts-ignore
+  if (!isAvailablePlatform(platform)) {
+    return next(new AppError(`${platform} platform is not valid`, 400));
+  }
+
   const { foundPlatfrom } = getPlatform(platform, userPlatforms);
+
   // if this platform is not in the userlist
   if (!foundPlatfrom) {
-    return res.status(400).send({
-      err_message: `no game with the name ${gameName} has been found in your wishlist`,
-    });
+    return next(new AppError(`no platform with the name ${platform} has been found in your wishlist`, 400));
   }
 
   const gamesForPlatform = foundPlatfrom.games;
 
   const gameToChange = getGameForUpd(gameName, gamesForPlatform);
   if (!gameToChange) {
-    return res.status(400).send({
-      err_message: `no game with the name ${gameName} has been found in your wishlist`,
-    });
+    return next(new AppError(`no game with the name ${gameName} has been found in your wishlist`, 400));
   }
 
   // check for existind ebayId
   const ebayOffers = gameToChange.watchedEbayOffers;
 
-  // @ts-ignore
-  res.success = ebayOffers;
-
-  // @ts-ignore
-  return res.json(res.success);
+  return res.json({
+    status: 'success',
+    data: ebayOffers,
+  });
 });
 
-export const toggleEbaySection = asyncErrorCatcher(async (req, res) => {
+export const toggleEbaySection = asyncErrorCatcher<TToggleEbaySectionHandler>(async (req, res, next) => {
   const { game, platform, isShowed } = req.body;
   const { profile } = res.locals;
 
   const userPlatforms = profile.wish_list.platforms;
 
-  let searchPlatform;
-  for (let i = 0; i < userPlatforms.length; i++) {
-    if (platform === userPlatforms[i].name) {
-      searchPlatform = userPlatforms[i];
-      break;
-    }
-  }
+  const { foundPlatfrom } = getPlatform(platform, userPlatforms);
+
   // if this platform is not in the userlist
-  if (!searchPlatform) {
-    return res.status(200).json({
-      missed: 'not in the list',
-    });
+  if (!foundPlatfrom) {
+    return next(new AppError(`no platform with the name ${platform} has been found in your wishlist`, 400));
   }
-  const gamesForPlatform = searchPlatform.games;
+  const gamesForPlatform = foundPlatfrom.games;
 
   const gameToSearch = getGameForUpd(game, gamesForPlatform);
   // check for existing games
   if (!gameToSearch) {
-    return res.status(200).json({
-      missed: 'not in the list',
-    });
+    return next(new AppError(`no game with the name ${game} has been found in your wishlist`, 400));
   }
   // changing the rule
   gameToSearch.isShowEbay = isShowed;
 
   await profile.save();
 
-  // @ts-ignore
-  res.success = `Ebay section has been ${isShowed === true ? 'showed' : 'hidden'}`;
   return res.json({
-    // @ts-ignore
-    success: res.success,
+    status: 'success',
   });
 });
