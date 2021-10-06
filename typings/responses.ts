@@ -12,6 +12,7 @@ interface IAppError {
 export interface IAppResBody<T = unknown> {
   err_message?: string;
   errors?: IAppError[];
+  additionals?: unknown;
   status: 'success' | 'fail' | 'error';
   data?: T;
 }

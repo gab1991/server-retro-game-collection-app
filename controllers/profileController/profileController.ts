@@ -8,6 +8,8 @@ import {
   TGetIsWatcheEbayCardHanler,
   TGetProfileHandler,
   TReorderGamesHandler,
+  TWatchEbayCardHandler,
+  TUnWatchEbayCardHandler,
 } from './types';
 
 export const reorderGames = asyncErrorCatcher<TReorderGamesHandler>(async (req, res, next) => {
@@ -159,8 +161,8 @@ export const getIsWatchedEbayCard = asyncErrorCatcher<TGetIsWatcheEbayCardHanler
   });
 });
 
-export const addEbayCard = asyncErrorCatcher(async (req, res) => {
-  const { ebayItemId, game, platform } = req.body.ebayCard;
+export const watchEbayCard = asyncErrorCatcher<TWatchEbayCardHandler>(async (req, res) => {
+  const { ebayItemId, game, platform } = req.body;
   const { profile } = res.locals;
 
   const userPlatforms = profile.wish_list.platforms;
@@ -179,51 +181,44 @@ export const addEbayCard = asyncErrorCatcher(async (req, res) => {
 
   const gamesForPlatform = foundPlatfrom.games;
 
-  const gameToChange = getGameForUpd(game, gamesForPlatform);
   // check for existing games
+  const gameToChange = getGameForUpd(game, gamesForPlatform);
 
   if (!gameToChange) {
-    return res.status(400).send({
-      err_message: `no game with the name ${game} has been found in your wishlist`,
-      show_modal: true,
-    });
+    throw new AppError(`no game with the name ${game} has been found in your wishlist`, 400, { showModal: true });
   }
 
   // check for existind ebayId
   const ebayOffers = gameToChange.watchedEbayOffers;
-  const ifExist = findEbayCardById(ebayItemId, ebayOffers);
+  const ifExist = findEbayCardById(ebayItemId.toString(), ebayOffers);
+
   if (ifExist !== null) {
-    return res.status(400).send({
-      err_message: `${ebayItemId} is already in your list`,
-    });
+    throw new AppError(`${ebayItemId} is already in your list`, 400);
   }
 
   gameToChange.watchedEbayOffers.unshift({
-    id: ebayItemId,
+    id: ebayItemId.toString(),
     date: new Date(),
   });
+
   await profile.save();
-  // @ts-ignore
-  res.success = `${ebayItemId} has been added successfully to your EbayWatch`;
 
   return res.json({
-    // @ts-ignore
-    success: res.success,
+    status: `success`,
   });
 });
 
-export const removeEbayCard = asyncErrorCatcher(async (req, res) => {
+export const unWatchEbayCard = asyncErrorCatcher<TUnWatchEbayCardHandler>(async (req, res) => {
   const { ebayItemId, game, platform } = req.body;
   const { profile } = res.locals;
 
   const userPlatforms = profile.wish_list.platforms;
 
   const { foundPlatfrom } = getPlatform(platform, userPlatforms);
+
   // if this platform is not in the userlist
   if (!foundPlatfrom) {
-    return res.status(400).send({
-      err_message: `no game with the name ${game} has been found in your wishlist`,
-    });
+    throw new AppError(`no platform with the name ${platform} has been found in your wishlist`, 400);
   }
 
   const gamesForPlatform = foundPlatfrom.games;
@@ -231,30 +226,23 @@ export const removeEbayCard = asyncErrorCatcher(async (req, res) => {
   // check for existing games
   const gameToChange = getGameForUpd(game, gamesForPlatform);
   if (!gameToChange) {
-    return res.status(400).send({
-      err_message: `no game with the name ${game} has been found in your wishlist`,
-    });
+    throw new AppError(`no game with the name ${game} has been found in your wishlist`, 400);
   }
 
   // check for existind ebayId
   const ebayOffers = gameToChange.watchedEbayOffers;
-  const ebayCardIndex = findEbayCardById(ebayItemId, ebayOffers);
+  const ebayCardIndex = findEbayCardById(ebayItemId.toString(), ebayOffers);
 
   if (ebayCardIndex !== null) {
     ebayOffers.splice(ebayCardIndex, 1);
   } else {
-    return res.status(400).send({
-      err_message: `no ebayCard with id ${ebayCardIndex} found`,
-    });
+    throw new AppError(`no ebayCard with id ${ebayCardIndex} found`, 400);
   }
 
   await profile.save();
 
-  // @ts-ignore
-  res.success = `${ebayItemId} has been removed `;
   return res.json({
-    // @ts-ignore
-    success: res.success,
+    status: 'success',
   });
 });
 

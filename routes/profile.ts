@@ -2,8 +2,8 @@ import express from 'express';
 import {
   getProfile,
   getIsWatchedEbayCard,
-  addEbayCard,
-  removeEbayCard,
+  watchEbayCard,
+  unWatchEbayCard,
   getGameWatchedCards,
   toggleEbaySection,
   addGame,
@@ -26,9 +26,9 @@ router.delete('/games', removeGame);
 
 router.put('/games/reorder', reorderGames);
 
-router.post('/ebayCards', addEbayCard);
+router.post('/ebayCards', watchEbayCard);
 
-router.delete('/ebayCards', removeEbayCard);
+router.delete('/ebayCards', unWatchEbayCard);
 
 router.get('/ebayCards/watched/:platform/:gameName', getGameWatchedCards);
 

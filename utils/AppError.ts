@@ -3,7 +3,7 @@ export class AppError extends Error {
 
   status: 'fail' | 'error';
 
-  constructor(message: string, statusCode: number) {
+  constructor(message: string, statusCode: number, public additionals?: unknown) {
     super(message);
 
     this.statusCode = statusCode;

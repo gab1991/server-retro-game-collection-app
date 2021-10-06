@@ -54,3 +54,20 @@ interface TReqReorderGamesBody {
 type IResReorderGames = IAppRes<IAppResBody, ILocalsWithProfile>;
 type TReqReorderGames = Request<ParamsDictionary, IResReorderGames, TReqReorderGamesBody>;
 export type TReorderGamesHandler = TAsyncMiddleWare<TReqReorderGames, IResReorderGames>;
+
+// WatchEbayCard
+interface IReqWatchEbayCardBody {
+  ebayItemId: number;
+  game: string;
+  platform: AvailablePlatforms;
+}
+type IResWatchEbayCard = IAppRes<IAppResBody, ILocalsWithProfile>;
+type TReqWatchEbayCard = Request<ParamsDictionary, IResWatchEbayCard, IReqWatchEbayCardBody>;
+export type TWatchEbayCardHandler = TAsyncMiddleWare<TReqWatchEbayCard, IResWatchEbayCard>;
+
+// UnWatchEbayCard
+
+type IReqUnWatchEbayCardBody = IReqWatchEbayCardBody;
+type IResUnWatchEbayCard = IAppRes<IAppResBody, ILocalsWithProfile>;
+type TReqUnWatchEbayCard = Request<ParamsDictionary, IResUnWatchEbayCard, IReqUnWatchEbayCardBody>;
+export type TUnWatchEbayCardHandler = TAsyncMiddleWare<TReqUnWatchEbayCard, IResUnWatchEbayCard>;
