@@ -9,6 +9,7 @@ const readdir = promisify(fs.readdir);
 
 // parameter defines the match of a search in minisearch library. The bigger the number the better the match
 const SCORE_THRESHOLD = 11;
+const REL_PATH = '../../../assets_minified_for_prod/images/box_artworks';
 
 interface IMinisearchInput {
   id: number;
@@ -29,7 +30,7 @@ export const getBoxArt = asyncErrorCatcher(async (req, res) => {
     throw new AppError('cannot get host out of req', 500);
   }
 
-  const regionsDir = path.resolve(__dirname, `../../assets_minified_for_prod/images/box_artworks/${platform}/`);
+  const regionsDir = path.resolve(__dirname, `${REL_PATH}/${platform}/`);
   const platformDir = await readdir(regionsDir);
   const regions = platformDir
     .filter((item) => {
@@ -43,10 +44,7 @@ export const getBoxArt = asyncErrorCatcher(async (req, res) => {
   const filePromises: Promise<string[]>[] = [];
 
   regions.forEach((region) => {
-    const directory = path.resolve(
-      __dirname,
-      `../../assets_minified_for_prod/images/box_artworks/${platform}/${region}`
-    );
+    const directory = path.resolve(__dirname, `${REL_PATH}/${platform}/${region}`);
     filePromises.push(readdir(directory));
   });
 
