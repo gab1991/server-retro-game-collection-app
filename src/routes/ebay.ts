@@ -1,5 +1,5 @@
 import express from 'express';
-import { findByKeywords, findSingleItem, getShippingCost } from 'controllers/ebayController';
+import { findByKeywords, findSingleItem, getShippingCost } from 'controllers/ebyaController/ebayController';
 
 const router = express.Router();
 
