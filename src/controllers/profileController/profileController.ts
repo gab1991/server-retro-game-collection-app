@@ -164,7 +164,12 @@ export const getIsWatchedEbayCard = asyncErrorCatcher<TGetIsWatcheEbayCardHanler
 });
 
 export const watchEbayCard = asyncErrorCatcher<TWatchEbayCardHandler>(async (req, res, next) => {
-  const { ebayItemId, game, platform } = req.body;
+  const { ebayItemId, gameName, platform } = req.params;
+
+  if (!isAvailablePlatform(platform) || !ebayItemId || !gameName) {
+    return next(new AppError('some parameters are not correct', 400));
+  }
+
   const { profile } = res.locals;
 
   const userPlatforms = profile.wish_list.platforms;
@@ -184,17 +189,17 @@ export const watchEbayCard = asyncErrorCatcher<TWatchEbayCardHandler>(async (req
   const gamesForPlatform = foundPlatfrom.games;
 
   // check for existing games
-  const gameToChange = getGameForUpd(game, gamesForPlatform);
+  const gameToChange = getGameForUpd(gameName, gamesForPlatform);
 
   if (!gameToChange) {
     return next(
-      new AppError(`no game with the name ${game} has been found in your wishlist`, 400, { showModal: true })
+      new AppError(`no game with the name ${gameName} has been found in your wishlist`, 400, { showModal: true })
     );
   }
 
   // check for existind ebayId
   const ebayOffers = gameToChange.watchedEbayOffers;
-  const ifExist = findEbayCardById(ebayItemId.toString(), ebayOffers);
+  const ifExist = findEbayCardById(ebayItemId, ebayOffers);
 
   if (ifExist !== null) {
     return next(new AppError(`${ebayItemId} is already in your list`, 400));
@@ -213,7 +218,12 @@ export const watchEbayCard = asyncErrorCatcher<TWatchEbayCardHandler>(async (req
 });
 
 export const unWatchEbayCard = asyncErrorCatcher<TUnWatchEbayCardHandler>(async (req, res, next) => {
-  const { ebayItemId, game, platform } = req.body;
+  const { ebayItemId, gameName, platform } = req.params;
+
+  if (!isAvailablePlatform(platform) || !ebayItemId || !gameName) {
+    return next(new AppError('some parameters are not correct', 400));
+  }
+
   const { profile } = res.locals;
 
   const userPlatforms = profile.wish_list.platforms;
@@ -228,9 +238,9 @@ export const unWatchEbayCard = asyncErrorCatcher<TUnWatchEbayCardHandler>(async 
   const gamesForPlatform = foundPlatfrom.games;
 
   // check for existing games
-  const gameToChange = getGameForUpd(game, gamesForPlatform);
+  const gameToChange = getGameForUpd(gameName, gamesForPlatform);
   if (!gameToChange) {
-    return next(new AppError(`no game with the name ${game} has been found in your wishlist`, 400));
+    return next(new AppError(`no game with the name ${gameName} has been found in your wishlist`, 400));
   }
 
   // check for existind ebayId

@@ -26,13 +26,13 @@ router.delete('/games', removeGame);
 
 router.put('/games/reorder', reorderGames);
 
-router.post('/ebayCards', watchEbayCard);
+router.post('/ebayCards/:platform/:gameName/:ebayItemId', watchEbayCard);
 
-router.delete('/ebayCards', unWatchEbayCard);
+router.delete('/ebayCards/:platform/:gameName/:ebayItemId', unWatchEbayCard);
 
-router.get('/ebayCards/watched/:platform/:gameName', getGameWatchedCards);
+router.get('/ebayCards/:platform/:gameName/watched', getGameWatchedCards);
 
-router.get('/ebayCards/isWatched/:platform/:gameName/:ebayItemId', getIsWatchedEbayCard);
+router.get('/ebayCards/:platform/:gameName/:ebayItemId/isWatched', getIsWatchedEbayCard);
 
 router.post('/toggleEbaySection', toggleEbaySection);
 
