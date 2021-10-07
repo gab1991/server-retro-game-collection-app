@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getGameDetails, getGameScreenshots, getGamesForPlatforms } from 'controllers/ragwController';
+import { getGameDetails, getGameScreenshots, getGamesForPlatforms } from 'controllers/rawgController';
 
 const router = express.Router();
 
