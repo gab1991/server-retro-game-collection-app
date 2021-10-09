@@ -14,15 +14,11 @@ export interface IAppResBody<T = unknown> {
   errors?: IAppError[];
   additionals?: unknown;
   status: 'success' | 'fail' | 'error';
-  data?: T;
+  payload?: T;
 }
 
 export interface ISignUpResponse extends IAppResBody {
   field?: 'username' | 'email' | 'unknown' | 'password';
-}
-
-export interface ICheckCredResBody extends IAppResBody {
-  username: string;
 }
 
 // LOCALS

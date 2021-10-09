@@ -67,7 +67,7 @@ export const signIn = asyncErrorCatcher<TSignInHandler>(async (req, res) => {
 
 export const checkCredentials = asyncErrorCatcher<TCheckCredHandler>(async (req, res) => {
   const { profile } = res.locals;
-  return res.send({ status: 'success', username: profile.username });
+  return res.send({ status: 'success', payload: { username: profile.username } });
 });
 
 export const logout = asyncErrorCatcher<TLogoutHandler>(async (req, res) => {

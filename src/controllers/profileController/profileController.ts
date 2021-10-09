@@ -41,7 +41,7 @@ export const reorderGames = asyncErrorCatcher<TReorderGamesHandler>(async (req, 
 
 export const getProfile: TGetProfileHandler = (req, res) => {
   const { profile } = res.locals;
-  return res.send({ status: 'success', data: profile });
+  return res.send({ status: 'success', payload: profile });
 };
 
 export const addGame = asyncErrorCatcher<TAddGameHandler>(async (req, res, next) => {
@@ -133,7 +133,7 @@ export const getIsWatchedEbayCard = asyncErrorCatcher<TGetIsWatcheEbayCardHanler
   if (!searchPlatform) {
     return res.json({
       status: 'success',
-      data: { inList: false },
+      payload: { inList: false },
     });
   }
   const gamesForPlatform = searchPlatform.games;
@@ -143,7 +143,7 @@ export const getIsWatchedEbayCard = asyncErrorCatcher<TGetIsWatcheEbayCardHanler
   if (!gameToSearch) {
     return res.json({
       status: 'success',
-      data: { inList: false },
+      payload: { inList: false },
     });
   }
 
@@ -154,13 +154,13 @@ export const getIsWatchedEbayCard = asyncErrorCatcher<TGetIsWatcheEbayCardHanler
   if (isExist !== null) {
     return res.json({
       status: 'success',
-      data: { inList: true },
+      payload: { inList: true },
     });
   }
 
   return res.json({
     status: 'success',
-    data: { inList: false },
+    payload: { inList: false },
   });
 });
 
@@ -290,7 +290,7 @@ export const getGameWatchedCards = asyncErrorCatcher<TGetWatchedCardsHanler>(asy
 
   return res.json({
     status: 'success',
-    data: ebayOffers,
+    payload: ebayOffers,
   });
 });
 

@@ -4,6 +4,7 @@ import path from 'path';
 import Minisearh from 'minisearch';
 import { asyncErrorCatcher } from 'utils/asyncErrorCatcher';
 import { AppError } from 'utils/AppError';
+import { TGetBoxArtHanler } from './types';
 
 const readdir = promisify(fs.readdir);
 
@@ -22,7 +23,7 @@ const miniSearch = new Minisearh({
   storeFields: ['name', 'link'],
 });
 
-export const getBoxArt = asyncErrorCatcher(async (req, res) => {
+export const getBoxArt = asyncErrorCatcher<TGetBoxArtHanler>(async (req, res) => {
   const host = req.get('host');
   const { gameName, platform } = req.params;
 
@@ -80,7 +81,7 @@ export const getBoxArt = asyncErrorCatcher(async (req, res) => {
         'Cache-Control': 'public, max-age=604800', // one week cache
       });
 
-      return res.json(filePath || genericBox);
+      return res.json({ status: 'success', payload: filePath || genericBox });
     }
   }
 });
