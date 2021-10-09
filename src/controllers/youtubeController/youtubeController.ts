@@ -28,5 +28,5 @@ export const getVideo = asyncErrorCatcher<TGetVideoHandler>(async (req, res, nex
 
   const bestMatchedVideoId = (response.data.items && response.data.items[0].id?.videoId) || null;
 
-  return res.json(bestMatchedVideoId);
+  return res.json({ status: 'success', payload: bestMatchedVideoId });
 });

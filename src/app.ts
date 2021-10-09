@@ -20,7 +20,7 @@ export const app = express();
 
 const apiLimiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
+  max: 200,
   message: 'Your limit is out. Try again in 15 minutes',
 });
 

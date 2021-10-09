@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { TAsyncMiddleWare } from 'typings/middlewares';
+import { IAppRes, IAppResBody } from 'typings/responses';
 
 interface IGetVideoParams {
   [key: string]: string;
@@ -9,4 +10,7 @@ interface IGetVideoParams {
   platform: string;
 }
 
-export type TGetVideoHandler = TAsyncMiddleWare<Request<IGetVideoParams | ParamsDictionary>, Response<string | null>>;
+export type TGetVideoHandler = TAsyncMiddleWare<
+  Request<IGetVideoParams | ParamsDictionary>,
+  IAppRes<IAppResBody<string | null>>
+>;

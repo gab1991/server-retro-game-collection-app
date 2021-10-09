@@ -19,7 +19,7 @@ interface IReqFindSingleElementsParams {
   [key: string]: string;
   id: string;
 }
-type IResFindSingleElement = IAppRes<IAppResBody>;
+type IResFindSingleElement = IAppRes<IAppResBody<unknown>>;
 type TReqFindSingleElement = Request<ParamsDictionary | IReqFindSingleElementsParams, IResFindSingleElement>;
 export type TFindSingleElementHandler = TAsyncMiddleWare<TReqFindSingleElement, IResFindSingleElement>;
 

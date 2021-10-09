@@ -62,7 +62,7 @@ export const findByKeywords = asyncErrorCatcher<TFindByKeywordsHandler>(async (r
   return res.json(data.findItemsByKeywordsResponse[0].searchResult);
 });
 
-export const findSingleItem = asyncErrorCatcher<TFindSingleElementHandler>(async (req, res) => {
+export const findSingleItem = asyncErrorCatcher<TFindSingleElementHandler>(async (req, res, next) => {
   const { id } = req.params;
 
   const token = await ebayAuthToken.getApplicationToken('PRODUCTION');
@@ -82,7 +82,11 @@ export const findSingleItem = asyncErrorCatcher<TFindSingleElementHandler>(async
   const { text } = await superagent.get(url).set('X-EBAY-API-IAF-TOKEN', token);
   const data = JSON.parse(text);
 
-  return res.json(data);
+  if (!data.Item) {
+    return next(new AppError(`something went wrong`, 500));
+  }
+
+  return res.json({ payload: data.Item, status: 'success' });
 });
 
 export const getShippingCost = asyncErrorCatcher<TGetShippingCostHandler>(async (req, res, next) => {
@@ -114,8 +118,8 @@ export const getShippingCost = asyncErrorCatcher<TGetShippingCostHandler>(async 
   const data = JSON.parse(text);
 
   if (status !== 200) {
-    return next(new AppError(`couldn't fetch data from ebay`, 500));
+    return next(new AppError(`couldn't fetch data from ebay`, status));
   }
 
-  return res.json(data);
+  return res.json({ payload: data, status: 'success' });
 });

@@ -22,7 +22,7 @@ export const getGameDetails = asyncErrorCatcher<TGetGameDetailsHandler>(async (r
     'Cache-Control': 'public, max-age=2592000', // one month cache
   });
 
-  return res.json(body);
+  return res.json({ status: 'success', payload: body });
 });
 
 export const getGameScreenshots = asyncErrorCatcher<TGetGameScreenshotsHandler>(async (req, res, next) => {
@@ -39,7 +39,7 @@ export const getGameScreenshots = asyncErrorCatcher<TGetGameScreenshotsHandler>(
     'Cache-Control': 'public, max-age=2592000', // one month cache
   });
 
-  return res.json(body);
+  return res.json({ status: 'success', payload: body });
 });
 
 export const getGamesForPlatforms = asyncErrorCatcher<TGetGamesForPlatformsHandler>(async (req, res, next) => {
@@ -53,5 +53,5 @@ export const getGamesForPlatforms = asyncErrorCatcher<TGetGamesForPlatformsHandl
     return next(new AppError("Couldn't fetch data from rawg", status));
   }
 
-  return res.json(body);
+  return res.json({ status: 'success', payload: body });
 });
