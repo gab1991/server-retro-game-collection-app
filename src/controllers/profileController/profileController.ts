@@ -1,6 +1,7 @@
 import { asyncErrorCatcher } from 'utils/asyncErrorCatcher';
 import { AppError } from 'utils/AppError';
 import { isAvailablePlatform } from 'typings/typeguards/profile';
+
 import { getGameForUpd, isGameInList, addNewPlatfrom, getPlatform, findEbayCardById } from './helpers';
 import {
   TAddGameHandler,
@@ -47,7 +48,7 @@ export const addGame = asyncErrorCatcher<TAddGameHandler>(async (req, res, next)
   const { platform, game, list, slug } = req.body;
   const { profile } = res.locals;
 
-  const userPlatforms = profile[list].platforms;
+  const userPlatforms = profile[`${list}`].platforms;
 
   let { foundPlatfrom } = getPlatform(platform, userPlatforms);
 
