@@ -5,3 +5,4 @@
 /assets_minified_for_prod
 ecosystem.config.js
 *-error.log
+/dist

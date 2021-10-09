@@ -38,4 +38,3 @@ export type IAppRes<
 
 export type IResWithVerifiedId = IAppRes<IAppResBody, ILocalsVerifiedID>;
 export type IResWithProfile = IAppRes<IAppResBody, ILocalsWithProfile>;
-export type TResVerifiedUsername = IAppRes<ICheckCredResBody, ILocalsWithProfile>;
