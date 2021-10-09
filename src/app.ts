@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import morgan from 'morgan';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import rateLimiter from 'express-rate-limit';
@@ -24,6 +25,9 @@ const apiLimiter = rateLimiter({
 });
 
 /** Middlewares */
+// Logging
+isDevelopment && app.use(morgan('tiny'));
+
 // Security
 app.use('/api/', apiLimiter);
 app.use(helmet());
