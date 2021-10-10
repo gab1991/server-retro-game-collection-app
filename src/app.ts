@@ -36,7 +36,7 @@ app.use(
       useDefaults: true,
       directives: {
         'font-src': ['*'],
-        'img-src': ['*'],
+        'img-src': ['*', 'data:'],
       },
       // reportOnly: true,
     },
