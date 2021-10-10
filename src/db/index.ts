@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const db_url = global.__IS_PROD__ ? process.env.DATABASE_CLOUD_URL : process.env.DATABASE_URL;
+const db_url = process.env.NODE_ENV === 'production' ? process.env.DATABASE_CLOUD_URL : process.env.DATABASE_URL;
 
 if (!db_url) {
   throw new Error('database url has not been provided');
