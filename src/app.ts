@@ -32,14 +32,7 @@ isDevelopment && app.use(morgan('tiny'));
 app.use('/api/', apiLimiter);
 app.use(
   helmet({
-    contentSecurityPolicy: {
-      useDefaults: true,
-      directives: {
-        'font-src': ['*'],
-        'img-src': ['*', 'data:'],
-      },
-      // reportOnly: true,
-    },
+    contentSecurityPolicy: false,
   })
 );
 app.use(mongoSanitizer()); // noSQL injection protection
