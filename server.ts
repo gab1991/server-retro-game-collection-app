@@ -1,5 +1,4 @@
 import './env';
-import './globals';
 import 'db';
 import { app } from 'app';
 
