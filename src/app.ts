@@ -30,7 +30,18 @@ isDevelopment && app.use(morgan('tiny'));
 
 // Security
 app.use('/api/', apiLimiter);
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        'font-src': ['*'],
+        'img-src': ['*'],
+      },
+      // reportOnly: true,
+    },
+  })
+);
 app.use(mongoSanitizer()); // noSQL injection protection
 app.use(xssClean()); // xss injection protection
 app.use(hpp()); // prevents http parameter pollution
@@ -61,7 +72,7 @@ app.use(
 
 // Basic html sending
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+  res.sendFile(path.resolve(__dirname, '../build', 'index.html'));
 });
 
 // 404 handling
