@@ -64,5 +64,12 @@ module.exports = {
         'node/file-extension-in-import': ['error', 'always', { '.js': 'never', '.ts': 'never' }],
       },
     },
+    // JS files
+    {
+      files: ['*.js'],
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+      },
+    },
   ],
 };
