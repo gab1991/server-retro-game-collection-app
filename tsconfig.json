@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "target": "es6",
+    "rootDir": "./",
+    "strict": true, // turn on --strictNullChecks, --noImplicitAny, --noImplicitThis, --alwaysStrict, --strictFunctionTypes, --strictPropertyInitialization  --strictBindCallApply
+    "moduleResolution": "node",
+    "checkJs": false,
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": "src",
+    "paths": {},
+    "noImplicitAny": false
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
+}
