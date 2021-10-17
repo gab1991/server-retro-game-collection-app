@@ -57,7 +57,8 @@ app.use('/api/rawg', rawgRoutes);
 app.use(express.static('build'));
 app.use(
   express.static('assets_minified_for_prod', {
-    setHeaders: (res) => {
+    setHeaders: (res, stat) => {
+      res.type(path.extname(stat)); // set content type header based on extension
       res.set({ 'Cache-Control': 'public, max-age=604800' });
     },
   })
