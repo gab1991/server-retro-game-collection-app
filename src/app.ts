@@ -29,7 +29,7 @@ const apiLimiter = rateLimiter({
 isDevelopment && app.use(morgan('tiny'));
 
 // Security
-app.use('/api/', apiLimiter);
+!isDevelopment && app.use('/api/', apiLimiter);
 app.use(
   helmet({
     contentSecurityPolicy: false,
