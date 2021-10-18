@@ -115,6 +115,7 @@ export const removeGame = asyncErrorCatcher<TRemoveGameHandler>(async (req, res,
 
   return res.send({
     status: 'success',
+    payload: profile,
   });
 });
 
