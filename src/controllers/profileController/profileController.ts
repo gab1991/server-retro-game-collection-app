@@ -216,6 +216,7 @@ export const watchEbayCard = asyncErrorCatcher<TWatchEbayCardHandler>(async (req
 
   return res.json({
     status: `success`,
+    payload: profile,
   });
 });
 
@@ -259,6 +260,7 @@ export const unWatchEbayCard = asyncErrorCatcher<TUnWatchEbayCardHandler>(async 
 
   return res.json({
     status: 'success',
+    payload: profile,
   });
 });
 

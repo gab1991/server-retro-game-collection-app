@@ -62,13 +62,13 @@ interface IReqWatchEbayCardParams {
   gameName: string;
   platform: string;
 }
-type IResWatchEbayCard = IAppRes<IAppResBody, ILocalsWithProfile>;
+type IResWatchEbayCard = IAppRes<IAppResBody<IProfile>, ILocalsWithProfile>;
 type TReqWatchEbayCard = Request<ParamsDictionary | IReqWatchEbayCardParams, IResWatchEbayCard>;
 export type TWatchEbayCardHandler = TAsyncMiddleWare<TReqWatchEbayCard, IResWatchEbayCard>;
 
 // UnWatchEbayCard
 type IReqUnWatchEbayCardParams = IReqWatchEbayCardParams;
-type IResUnWatchEbayCard = IAppRes<IAppResBody, ILocalsWithProfile>;
+type IResUnWatchEbayCard = IAppRes<IAppResBody<IProfile>, ILocalsWithProfile>;
 type TReqUnWatchEbayCard = Request<ParamsDictionary | IReqUnWatchEbayCardParams, IResUnWatchEbayCard>;
 export type TUnWatchEbayCardHandler = TAsyncMiddleWare<TReqUnWatchEbayCard, IResUnWatchEbayCard>;
 
