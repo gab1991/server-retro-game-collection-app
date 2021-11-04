@@ -12,7 +12,7 @@ module.exports = {
   output: {
     publicPath: '/',
     filename: 'server.js',
-    path: path.resolve(process.cwd(), 'dist'),
+    path: path.resolve(__dirname, 'dist'),
     clean: true, // Clean the output directory before emit.
   },
   node: {
