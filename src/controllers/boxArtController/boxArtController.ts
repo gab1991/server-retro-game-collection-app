@@ -21,7 +21,6 @@ interface IMinisearchInput {
 }
 
 export const getBoxArt = asyncErrorCatcher<TGetBoxArtHanler>(async (req, res) => {
-  const host = req.get('host');
   const { gameName, platform } = req.params;
 
   if (!isAvailablePlatform(platform)) {
@@ -83,7 +82,7 @@ export const getBoxArt = asyncErrorCatcher<TGetBoxArtHanler>(async (req, res) =>
 
     if (boxArts[0] && boxArts[0].score > SCORE_THRESHOLD) {
       const bestMatchedBox = boxArts[0];
-      const filePath = `http://${host}/images/box_artworks/${platform}/${regions[i]}/${bestMatchedBox.path}`;
+      const filePath = `images/box_artworks/${platform}/${regions[i]}/${bestMatchedBox.path}`;
 
       res.set({
         'Cache-Control': 'public, max-age=604800', // one week cache
@@ -93,7 +92,7 @@ export const getBoxArt = asyncErrorCatcher<TGetBoxArtHanler>(async (req, res) =>
     }
   }
 
-  const genericBox = `http://${host}/images/box_artworks/${platform}/generic_box.png`;
+  const genericBox = `images/box_artworks/${platform}/generic_box.png`;
   boxArtCache.addEntry(platform, gameName, genericBox);
   return res.json({ status: 'success', payload: genericBox });
 });

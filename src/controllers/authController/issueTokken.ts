@@ -12,7 +12,7 @@ export const issueToken = (id: string, res: Response): void => {
 
   res.cookie('authorization', token, {
     maxAge: Number(TOKEN_COOKIE_MAX_AGE),
-    httpOnly: true, // prevent accessing cookie from js
+    httpOnly: true,
     sameSite: global.__IS_PROD__ ? 'strict' : 'lax',
     // secure: true  at first need to enable https
   });
